@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Framework.Internal;
-
+// test test test
 namespace Microsoft.Framework.Localization
 {
     /// <summary>
