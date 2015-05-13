@@ -3,6 +3,7 @@
 
 namespace Microsoft.AspNet.Localization
 {
+//안녕
     /// <summary>
     /// Represents the feature that provides the current request's culture information.
     /// </summary>
