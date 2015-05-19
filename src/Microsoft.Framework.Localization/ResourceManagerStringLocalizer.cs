@@ -149,6 +149,12 @@ namespace Microsoft.Framework.Localization
             }
         }
 
+        // Internal to allow testing
+        internal static void ClearResourceNamesCache()
+        {
+            _resourceNamesCache.Clear();
+        }
+
         private IEnumerable<string> GetResourceNamesFromCultureHierarchy(CultureInfo startingCulture)
         {
             var currentCulture = startingCulture;
