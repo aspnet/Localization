@@ -18,9 +18,11 @@ namespace Microsoft.Framework.Localization
     /// </summary>
     public class ResourceManagerStringLocalizer : IStringLocalizer
     {
-        private readonly ConcurrentDictionary<MissingManifestCacheKey, object> _missingManifestCache =
-            new ConcurrentDictionary<MissingManifestCacheKey, object>();
-        private readonly ConcurrentDictionary<string, IList<string>> _cache = new ConcurrentDictionary<string, IList<string>>();
+        private readonly ConcurrentDictionary<string, object> _missingManifestCache =
+            new ConcurrentDictionary<string, object>();
+
+        private readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
+            new ConcurrentDictionary<string, IList<string>>();
 
 
         /// <summary>
@@ -98,9 +100,10 @@ namespace Microsoft.Framework.Localization
         /// <param name="name">The name of the string resource.</param>
         /// <param name="culture">The <see cref="CultureInfo"/> to get the string for.</param>
         /// <returns>The resource string, or <c>null</c> if none was found.</returns>
-        protected string GetStringSafely([NotNull] string name, [NotNull] CultureInfo culture)
+        protected string GetStringSafely([NotNull] string name, CultureInfo culture)
         {
-            var cacheKey = new MissingManifestCacheKey(name, culture ?? CultureInfo.CurrentUICulture);
+            var cacheKey = $"name={name}&culture={(culture ?? CultureInfo.CurrentUICulture).Name}";
+
             if (_missingManifestCache.ContainsKey(cacheKey))
             {
                 return null;
@@ -138,7 +141,6 @@ namespace Microsoft.Framework.Localization
         /// <returns>The <see cref="IEnumerator{LocalizedString}"/>.</returns>
         protected IEnumerator<LocalizedString> GetEnumerator([NotNull] CultureInfo culture)
         {
-            // TODO: I'm sure something here should be cached, probably the whole result
             var resourceNames = GetResourceNamesFromCultureHierarchy(culture);
 
             foreach (var name in resourceNames)
@@ -157,7 +159,11 @@ namespace Microsoft.Framework.Localization
             {
                 try
                 {
-                    GetCultureThings(currentCulture, resourceNames);
+                    var cultureResourceNames = GetResourceNamesForCulture(currentCulture);
+                    foreach (var resourceName in cultureResourceNames)
+                    {
+                        resourceNames.Add(resourceName);
+                    }
                 }
                 catch (MissingManifestResourceException) { }
 
@@ -173,74 +179,32 @@ namespace Microsoft.Framework.Localization
             return resourceNames;
         }
 
-        private void GetCultureThings(CultureInfo currentCulture, HashSet<string> resourceNames)
+        private IList<string> GetResourceNamesForCulture(CultureInfo culture)
         {
             var resourceStreamName = ResourceBaseName;
-            if (!string.IsNullOrEmpty(currentCulture.Name))
+            if (!string.IsNullOrEmpty(culture.Name))
             {
-                resourceStreamName += "." + currentCulture.Name;
+                resourceStreamName += "." + culture.Name;
             }
             resourceStreamName += ".resources";
 
-            var rNames = _cache.GetOrAdd(resourceStreamName, key =>
-              {
-                  var names = new List<string>();
-                  using (var cultureResourceStream = ResourceAssembly.GetManifestResourceStream(key))
-                  using (var resources = new ResourceReader(cultureResourceStream))
-                  {
-                      foreach (DictionaryEntry entry in resources)
-                      {
-                          var resourceName = (string)entry.Key;
-                          names.Add(resourceName);
-                      }
-                  }
-
-                  return names;
-              });
-
-            foreach (var resourceName in rNames)
+            var cultureResourceNames = _resourceNamesCache.GetOrAdd(resourceStreamName, key =>
             {
-                resourceNames.Add(resourceName);
-            }
-        }
-
-        private class MissingManifestCacheKey : IEquatable<MissingManifestCacheKey>
-        {
-            private readonly int _hashCode;
-
-            public MissingManifestCacheKey(string name, CultureInfo culture)
-            {
-                Name = name;
-                CultureInfo = culture;
-                _hashCode = new { Name, CultureInfo }.GetHashCode();
-            }
-
-            public string Name { get; }
-
-            public CultureInfo CultureInfo { get; }
-
-            public bool Equals(MissingManifestCacheKey other)
-            {
-                return string.Equals(Name, other.Name, StringComparison.Ordinal)
-                    && CultureInfo == other.CultureInfo;
-            }
-
-            public override bool Equals(object obj)
-            {
-                var other = obj as MissingManifestCacheKey;
-
-                if (other != null)
+                var names = new List<string>();
+                using (var cultureResourceStream = ResourceAssembly.GetManifestResourceStream(key))
+                using (var resources = new ResourceReader(cultureResourceStream))
                 {
-                    return Equals(other);
+                    foreach (DictionaryEntry entry in resources)
+                    {
+                        var resourceName = (string)entry.Key;
+                        names.Add(resourceName);
+                    }
                 }
 
-                return base.Equals(obj);
-            }
+                return names;
+            });
 
-            public override int GetHashCode()
-            {
-                return _hashCode;
-            }
+            return cultureResourceNames;
         }
     }
 }
