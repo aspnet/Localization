@@ -21,10 +21,9 @@ namespace Microsoft.Framework.Localization
         private readonly ConcurrentDictionary<string, object> _missingManifestCache =
             new ConcurrentDictionary<string, object>();
 
-        private readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
+        private static readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
             new ConcurrentDictionary<string, IList<string>>();
-
-
+        
         /// <summary>
         /// Creates a new <see cref="ResourceManagerStringLocalizer"/>.
         /// </summary>
@@ -188,7 +187,9 @@ namespace Microsoft.Framework.Localization
             }
             resourceStreamName += ".resources";
 
-            var cultureResourceNames = _resourceNamesCache.GetOrAdd(resourceStreamName, key =>
+            var cacheKey = $"assembly={ResourceAssembly.FullName};resourceStreamName={resourceStreamName}";
+
+            var cultureResourceNames = _resourceNamesCache.GetOrAdd(cacheKey, key =>
             {
                 var names = new List<string>();
                 using (var cultureResourceStream = ResourceAssembly.GetManifestResourceStream(key))

@@ -22,7 +22,11 @@ namespace Microsoft.Framework.Localization.Test
             resourceAssembly.Setup(rm => rm.GetManifestResourceStream(It.IsAny<string>()))
                 .Returns(() => MakeResourceStream());
             var baseName = "test";
-            var localizer = new ResourceManagerStringLocalizer(
+            var localizer1 = new ResourceManagerStringLocalizer(
+                resourceManager.Object,
+                resourceAssembly.Object,
+                baseName);
+            var localizer2 = new ResourceManagerStringLocalizer(
                 resourceManager.Object,
                 resourceAssembly.Object,
                 baseName);
@@ -30,7 +34,8 @@ namespace Microsoft.Framework.Localization.Test
             // Act
             for (int i = 0; i < 5; i++)
             {
-                localizer.ToList();
+                localizer1.ToList();
+                localizer2.ToList();
             }
 
             // Assert
