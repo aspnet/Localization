@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Framework.Internal;
+using Microsoft.Framework.Localization.Internal;
 
 namespace Microsoft.Framework.Localization
 {
@@ -18,8 +19,15 @@ namespace Microsoft.Framework.Localization
     /// </summary>
     public class ResourceManagerStringLocalizer : IStringLocalizer
     {
-        private readonly ConcurrentDictionary<MissingManifestCacheKey, object> _missingManifestCache =
-            new ConcurrentDictionary<MissingManifestCacheKey, object>();
+        private static readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
+            new ConcurrentDictionary<string, IList<string>>();
+
+        private readonly ConcurrentDictionary<string, object> _missingManifestCache =
+            new ConcurrentDictionary<string, object>();
+
+        private readonly ResourceManager _resourceManager;
+        private readonly AssemblyWrapper _resourceAssemblyWrapper;
+        private readonly string _resourceBaseName;
 
         /// <summary>
         /// Creates a new <see cref="ResourceManagerStringLocalizer"/>.
@@ -31,26 +39,23 @@ namespace Microsoft.Framework.Localization
             [NotNull] ResourceManager resourceManager,
             [NotNull] Assembly resourceAssembly,
             [NotNull] string baseName)
+            : this(resourceManager, new AssemblyWrapper(resourceAssembly), baseName)
         {
-            ResourceManager = resourceManager;
-            ResourceAssembly = resourceAssembly;
-            ResourceBaseName = baseName;
+            
         }
 
         /// <summary>
-        /// The <see cref="System.Resources.ResourceManager"/> to read strings from.
+        /// Intended for testing purposes only.
         /// </summary>
-        protected ResourceManager ResourceManager { get; }
-
-        /// <summary>
-        /// The <see cref="Assembly"/> that contains the strings as embedded resources.
-        /// </summary>
-        protected Assembly ResourceAssembly { get; }
-
-        /// <summary>
-        /// The base name of the embedded resource in the <see cref="Assembly"/> that contains the strings.
-        /// </summary>
-        protected string ResourceBaseName { get; }
+        public ResourceManagerStringLocalizer(
+            [NotNull] ResourceManager resourceManager,
+            [NotNull] AssemblyWrapper resourceAssemblyWrapper,
+            [NotNull] string baseName)
+        {
+            _resourceAssemblyWrapper = resourceAssemblyWrapper;
+            _resourceManager = resourceManager;
+            _resourceBaseName = baseName;
+        }
 
         /// <inheritdoc />
         public virtual LocalizedString this[[NotNull] string name]
@@ -81,24 +86,24 @@ namespace Microsoft.Framework.Localization
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             return culture == null
-                ? new ResourceManagerStringLocalizer(ResourceManager, ResourceAssembly, ResourceBaseName)
-                : new ResourceManagerWithCultureStringLocalizer(
-                    ResourceManager,
-                    ResourceAssembly,
-                    ResourceBaseName,
+                ? new ResourceManagerStringLocalizer(_resourceManager, _resourceAssemblyWrapper, _resourceBaseName)
+                : new ResourceManagerWithCultureStringLocalizer(_resourceManager,
+                    _resourceAssemblyWrapper,
+                    _resourceBaseName,
                     culture);
         }
 
         /// <summary>
-        /// Gets a resource string from the <see cref="ResourceManager"/> and returns <c>null</c> instead of
+        /// Gets a resource string from the <see cref="_resourceManager"/> and returns <c>null</c> instead of
         /// throwing exceptions if a match isn't found.
         /// </summary>
         /// <param name="name">The name of the string resource.</param>
         /// <param name="culture">The <see cref="CultureInfo"/> to get the string for.</param>
         /// <returns>The resource string, or <c>null</c> if none was found.</returns>
-        protected string GetStringSafely([NotNull] string name, [NotNull] CultureInfo culture)
+        protected string GetStringSafely([NotNull] string name, CultureInfo culture)
         {
-            var cacheKey = new MissingManifestCacheKey(name, culture ?? CultureInfo.CurrentUICulture);
+            var cacheKey = $"name={name}&culture={(culture ?? CultureInfo.CurrentUICulture).Name}";
+
             if (_missingManifestCache.ContainsKey(cacheKey))
             {
                 return null;
@@ -106,7 +111,7 @@ namespace Microsoft.Framework.Localization
 
             try
             {
-                return culture == null ? ResourceManager.GetString(name) : ResourceManager.GetString(name, culture);
+                return culture == null ? _resourceManager.GetString(name) : _resourceManager.GetString(name, culture);
             }
             catch (MissingManifestResourceException)
             {
@@ -136,7 +141,6 @@ namespace Microsoft.Framework.Localization
         /// <returns>The <see cref="IEnumerator{LocalizedString}"/>.</returns>
         protected IEnumerator<LocalizedString> GetEnumerator([NotNull] CultureInfo culture)
         {
-            // TODO: I'm sure something here should be cached, probably the whole result
             var resourceNames = GetResourceNamesFromCultureHierarchy(culture);
 
             foreach (var name in resourceNames)
@@ -144,6 +148,12 @@ namespace Microsoft.Framework.Localization
                 var value = GetStringSafely(name, culture);
                 yield return new LocalizedString(name, value ?? name, resourceNotFound: value == null);
             }
+        }
+
+        // Internal to allow testing
+        internal static void ClearResourceNamesCache()
+        {
+            _resourceNamesCache.Clear();
         }
 
         private IEnumerable<string> GetResourceNamesFromCultureHierarchy(CultureInfo startingCulture)
@@ -155,20 +165,10 @@ namespace Microsoft.Framework.Localization
             {
                 try
                 {
-                    var resourceStreamName = ResourceBaseName;
-                    if (!string.IsNullOrEmpty(currentCulture.Name))
+                    var cultureResourceNames = GetResourceNamesForCulture(currentCulture);
+                    foreach (var resourceName in cultureResourceNames)
                     {
-                        resourceStreamName += "." + currentCulture.Name;
-                    }
-                    resourceStreamName += ".resources";
-                    using (var cultureResourceStream = ResourceAssembly.GetManifestResourceStream(resourceStreamName))
-                    using (var resources = new ResourceReader(cultureResourceStream))
-                    {
-                        foreach (DictionaryEntry entry in resources)
-                        {
-                            var resourceName = (string)entry.Key;
-                            resourceNames.Add(resourceName);
-                        }
+                        resourceNames.Add(resourceName);
                     }
                 }
                 catch (MissingManifestResourceException) { }
@@ -185,43 +185,34 @@ namespace Microsoft.Framework.Localization
             return resourceNames;
         }
 
-        private class MissingManifestCacheKey : IEquatable<MissingManifestCacheKey>
+        private IList<string> GetResourceNamesForCulture(CultureInfo culture)
         {
-            private readonly int _hashCode;
-
-            public MissingManifestCacheKey(string name, CultureInfo culture)
+            var resourceStreamName = _resourceBaseName;
+            if (!string.IsNullOrEmpty(culture.Name))
             {
-                Name = name;
-                CultureInfo = culture;
-                _hashCode = new { Name, CultureInfo }.GetHashCode();
+                resourceStreamName += "." + culture.Name;
             }
+            resourceStreamName += ".resources";
 
-            public string Name { get; }
+            var cacheKey = $"assembly={_resourceAssemblyWrapper.FullName};resourceStreamName={resourceStreamName}";
 
-            public CultureInfo CultureInfo { get; }
-
-            public bool Equals(MissingManifestCacheKey other)
+            var cultureResourceNames = _resourceNamesCache.GetOrAdd(cacheKey, key =>
             {
-                return string.Equals(Name, other.Name, StringComparison.Ordinal)
-                    && CultureInfo == other.CultureInfo;
-            }
-
-            public override bool Equals(object obj)
-            {
-                var other = obj as MissingManifestCacheKey;
-
-                if (other != null)
+                var names = new List<string>();
+                using (var cultureResourceStream = _resourceAssemblyWrapper.GetManifestResourceStream(key))
+                using (var resources = new ResourceReader(cultureResourceStream))
                 {
-                    return Equals(other);
+                    foreach (DictionaryEntry entry in resources)
+                    {
+                        var resourceName = (string)entry.Key;
+                        names.Add(resourceName);
+                    }
                 }
 
-                return base.Equals(obj);
-            }
+                return names;
+            });
 
-            public override int GetHashCode()
-            {
-                return _hashCode;
-            }
+            return cultureResourceNames;
         }
     }
 }
