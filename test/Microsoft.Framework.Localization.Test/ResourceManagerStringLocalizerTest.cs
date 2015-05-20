@@ -97,10 +97,7 @@ namespace Microsoft.Framework.Localization.Test
 
             }
 
-            public override string GetString(string name, CultureInfo culture)
-            {
-                return null;
-            }
+            public override string GetString(string name, CultureInfo culture) => null;
         }
 
         public class TestAssemblyWrapper : AssemblyWrapper
