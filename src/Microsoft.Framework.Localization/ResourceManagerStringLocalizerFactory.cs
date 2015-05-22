@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Framework.Internal;
@@ -15,6 +17,9 @@ namespace Microsoft.Framework.Localization
     /// </summary>
     public class ResourceManagerStringLocalizerFactory : IStringLocalizerFactory
     {
+        private readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
+            new ConcurrentDictionary<string, IList<string>>();
+
         private readonly IApplicationEnvironment _applicationEnvironment;
 
         /// <summary>
@@ -35,9 +40,13 @@ namespace Microsoft.Framework.Localization
         public IStringLocalizer Create([NotNull] Type resourceSource)
         {
             var typeInfo = resourceSource.GetTypeInfo();
-            var assembly = new AssemblyWrapper(typeInfo.Assembly);
+            var assembly = typeInfo.Assembly;
             var baseName = typeInfo.FullName;
-            return new ResourceManagerStringLocalizer(new ResourceManager(resourceSource), assembly, baseName);
+            return new ResourceManagerStringLocalizer(
+                new ResourceManager(resourceSource),
+                assembly,
+                baseName,
+                _resourceNamesCache);
         }
 
         /// <summary>
@@ -52,8 +61,9 @@ namespace Microsoft.Framework.Localization
 
             return new ResourceManagerStringLocalizer(
                 new ResourceManager(baseName, assembly),
-                new AssemblyWrapper(assembly),
-                baseName);
+                assembly,
+                baseName,
+                _resourceNamesCache);
         }
     }
 }
