@@ -21,7 +21,7 @@ namespace Microsoft.Framework.Localization
         private readonly ConcurrentDictionary<string, object> _missingManifestCache =
             new ConcurrentDictionary<string, object>();
 
-        private readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache;
+        private readonly IResourceNamesCache _resourceNamesCache;
         private readonly ResourceManager _resourceManager;
         private readonly AssemblyWrapper _resourceAssemblyWrapper;
         private readonly string _resourceBaseName;
@@ -32,15 +32,12 @@ namespace Microsoft.Framework.Localization
         /// <param name="resourceManager">The <see cref="System.Resources.ResourceManager"/> to read strings from.</param>
         /// <param name="resourceAssembly">The <see cref="Assembly"/> that contains the strings as embedded resources.</param>
         /// <param name="baseName">The base name of the embedded resource in the <see cref="Assembly"/> that contains the strings.</param>
-        /// <param name="resourceNamesCache">
-        /// A <see cref="ConcurrentDictionary{string, IList{string}}"/> that caches the list of strings for a given
-        /// resource assembly name.
-        /// </param>
+        /// <param name="resourceNamesCache">Cache of the list of strings for a given resource assembly name.</param>
         public ResourceManagerStringLocalizer(
             [NotNull] ResourceManager resourceManager,
             [NotNull] Assembly resourceAssembly,
             [NotNull] string baseName,
-            [NotNull] ConcurrentDictionary<string, IList<string>> resourceNamesCache)
+            [NotNull] IResourceNamesCache resourceNamesCache)
             : this(resourceManager, new AssemblyWrapper(resourceAssembly), baseName, resourceNamesCache)
         {
             
@@ -53,7 +50,7 @@ namespace Microsoft.Framework.Localization
             [NotNull] ResourceManager resourceManager,
             [NotNull] AssemblyWrapper resourceAssemblyWrapper,
             [NotNull] string baseName,
-            [NotNull] ConcurrentDictionary<string, IList<string>> resourceNamesCache)
+            [NotNull] IResourceNamesCache resourceNamesCache)
         {
             _resourceAssemblyWrapper = resourceAssemblyWrapper;
             _resourceManager = resourceManager;

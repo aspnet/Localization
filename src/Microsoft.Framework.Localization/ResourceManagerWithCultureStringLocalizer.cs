@@ -1,13 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Framework.Internal;
-using Microsoft.Framework.Localization.Internal;
 
 namespace Microsoft.Framework.Localization
 {
@@ -25,16 +23,13 @@ namespace Microsoft.Framework.Localization
         /// <param name="resourceManager">The <see cref="System.Resources.ResourceManager"/> to read strings from.</param>
         /// <param name="resourceAssembly">The <see cref="Assembly"/> that contains the strings as embedded resources.</param>
         /// <param name="baseName">The base name of the embedded resource in the <see cref="Assembly"/> that contains the strings.</param>
-        /// <param name="resourceNamesCache">
-        /// A <see cref="ConcurrentDictionary{string, IList{string}}"/> that caches the list of strings for a given
-        /// resource assembly name.
-        /// </param>
+        /// <param name="resourceNamesCache">Cache of the list of strings for a given resource assembly name.</param>
         /// <param name="culture">The specific <see cref="CultureInfo"/> to use.</param>
         public ResourceManagerWithCultureStringLocalizer(
             [NotNull] ResourceManager resourceManager,
             [NotNull] Assembly resourceAssembly,
             [NotNull] string baseName,
-            [NotNull] ConcurrentDictionary<string, IList<string>> resourceNamesCache,
+            [NotNull] IResourceNamesCache resourceNamesCache,
             [NotNull] CultureInfo culture)
             : base(resourceManager, resourceAssembly, baseName, resourceNamesCache)
         {

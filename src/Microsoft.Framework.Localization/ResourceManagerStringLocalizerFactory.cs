@@ -2,12 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Framework.Internal;
-using Microsoft.Framework.Localization.Internal;
 using Microsoft.Framework.Runtime;
 
 namespace Microsoft.Framework.Localization
@@ -17,8 +14,7 @@ namespace Microsoft.Framework.Localization
     /// </summary>
     public class ResourceManagerStringLocalizerFactory : IStringLocalizerFactory
     {
-        private readonly ConcurrentDictionary<string, IList<string>> _resourceNamesCache =
-            new ConcurrentDictionary<string, IList<string>>();
+        private readonly IResourceNamesCache _resourceNamesCache = new ResourceNamesCache();
 
         private readonly IApplicationEnvironment _applicationEnvironment;
 

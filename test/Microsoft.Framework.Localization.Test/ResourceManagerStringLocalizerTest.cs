@@ -1,8 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,7 +17,7 @@ namespace Microsoft.Framework.Localization.Test
         public void EnumeratorCachesCultureWalkForSameAssembly()
         {
             // Arrange
-            var resourceNamesCache = new ConcurrentDictionary<string, IList<string>>();
+            var resourceNamesCache = new ResourceNamesCache();
             var baseName = "test";
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
@@ -42,7 +40,7 @@ namespace Microsoft.Framework.Localization.Test
         public void EnumeratorCacheIsScopedByAssembly()
         {
             // Arrange
-            var resourceNamesCache = new ConcurrentDictionary<string, IList<string>>();
+            var resourceNamesCache = new ResourceNamesCache();
             var baseName = "test";
             var resourceAssembly1 = new TestAssemblyWrapper("Assembly1");
             var resourceAssembly2 = new TestAssemblyWrapper("Assembly2");
