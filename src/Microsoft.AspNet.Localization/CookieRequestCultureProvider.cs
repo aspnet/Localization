@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.Globalization;
@@ -14,7 +15,7 @@ namespace Microsoft.AspNet.Localization
     /// </summary>
     public class CookieRequestCultureProvider : RequestCultureProvider
     {
-        private static readonly char[] _cookieSeparator = new[] { '|' };
+        private static readonly char _cookieSeparator = '|';
         private static readonly string _culturePrefix = "c=";
         private static readonly string _uiCulturePrefix = "uic=";
 
@@ -53,7 +54,7 @@ namespace Microsoft.AspNet.Localization
         /// <returns>The cookie value.</returns>
         public static string MakeCookieValue([NotNull] RequestCulture requestCulture)
         {
-            var seperator = _cookieSeparator[0].ToString();
+            var seperator = _cookieSeparator.ToString();
 
             return string.Join(seperator,
                 $"{_culturePrefix}{requestCulture.Culture.Name}",
@@ -73,7 +74,7 @@ namespace Microsoft.AspNet.Localization
                 return null;
             }
 
-            var parts = value.Split(_cookieSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var parts = value.Split(_cookieSeparator).Where(v => v != string.Empty).ToArray();
 
             if (parts.Length != 2)
             {
