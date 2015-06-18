@@ -14,7 +14,7 @@ namespace Microsoft.AspNet.Localization
     /// </summary>
     public class CookieRequestCultureProvider : RequestCultureProvider
     {
-        private static readonly char[] _cookieSeparator = new[] { '|' };
+        private static readonly char _cookieSeparator = '|';
         private static readonly string _culturePrefix = "c=";
         private static readonly string _uiCulturePrefix = "uic=";
 
@@ -53,7 +53,7 @@ namespace Microsoft.AspNet.Localization
         /// <returns>The cookie value.</returns>
         public static string MakeCookieValue([NotNull] RequestCulture requestCulture)
         {
-            var seperator = _cookieSeparator[0].ToString();
+            var seperator = _cookieSeparator.ToString();
 
             return string.Join(seperator,
                 $"{_culturePrefix}{requestCulture.Culture.Name}",
