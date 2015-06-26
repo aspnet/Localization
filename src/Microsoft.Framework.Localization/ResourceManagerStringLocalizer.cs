@@ -43,10 +43,7 @@ namespace Microsoft.Framework.Localization
             
         }
 
-        /// <summary>
-        /// Intended for testing purposes only.
-        /// </summary>
-        public ResourceManagerStringLocalizer(
+        internal ResourceManagerStringLocalizer(
             [NotNull] ResourceManager resourceManager,
             [NotNull] AssemblyWrapper resourceAssemblyWrapper,
             [NotNull] string baseName,
