@@ -41,12 +41,26 @@ namespace Microsoft.AspNet.Localization
 
             if (Options.SupportedCultures != null && !Options.SupportedCultures.Contains(result.Culture))
             {
-                result = new RequestCulture(Options.DefaultRequestCulture.Culture, result.UICulture);
+                if (Options.SupportedCultures.Count > 0)
+                {
+                    result = new RequestCulture(Options.SupportedCultures[0], result.UICulture);
+                }
+                else
+                {
+                    result = new RequestCulture(Options.DefaultRequestCulture.Culture, result.UICulture);
+                }
             }
 
             if (Options.SupportedUICultures != null && !Options.SupportedUICultures.Contains(result.UICulture))
             {
-                result = new RequestCulture(result.Culture, Options.DefaultRequestCulture.UICulture);
+                if (Options.SupportedUICultures.Count > 0)
+                {
+                    result = new RequestCulture(result.Culture, Options.SupportedUICultures[0]);
+                }
+                else
+                {
+                    result = new RequestCulture(result.Culture, Options.DefaultRequestCulture.UICulture);
+                }
             }
 
             if (requestCulture.Culture != result.Culture && requestCulture.UICulture != result.UICulture)
