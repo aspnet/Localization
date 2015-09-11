@@ -58,7 +58,7 @@ namespace Microsoft.Framework.Localization.Tests
         }
 
         [Fact]
-        public async void GetDefaultCultureInfoIfCultureValuesAreInvalid()
+        public async void GetDefaultCultureInfoIfCultureIsInvalid()
         {
             using (var server = TestServer.Create(app =>
             {
@@ -69,6 +69,26 @@ namespace Microsoft.Framework.Localization.Tests
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
                     var requestCulture = requestCultureFeature.RequestCulture;
                     Assert.Equal(options.DefaultRequestCulture.Culture.Name, requestCulture.Culture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync("/page?culture=ar-XY&ui-culture=ar-SA");
+            }
+        }
+
+        [Fact]
+        public async void GetDefaultCultureInfoIfUICultureIsInvalid()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions();
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
                     Assert.Equal(options.DefaultRequestCulture.UICulture.Name, requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
