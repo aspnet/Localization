@@ -32,10 +32,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal("ar-SA", requestCulture.Culture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -64,10 +60,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal(options.DefaultRequestCulture.Culture.Name, requestCulture.Culture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -93,10 +85,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal(options.DefaultRequestCulture.Culture.Name, requestCulture.Culture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();

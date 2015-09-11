@@ -28,10 +28,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal("ar-YE", requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -54,10 +50,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal(options.DefaultRequestCulture.UICulture.Name, requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -80,10 +72,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal(options.DefaultRequestCulture.UICulture.Name, requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -107,10 +95,6 @@ namespace Microsoft.Framework.Localization.Tests
         //            Assert.Equal("ar-SA", requestCulture.UICulture.Name);
         //            return Task.FromResult(0);
         //        });
-        //    },
-        //    services =>
-        //    {
-        //        services.AddLocalization();
         //    }))
         //    {
         //        var client = server.CreateClient();
@@ -133,10 +117,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal("ar-SA", requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
@@ -163,10 +143,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal("ar-YE", requestCulture.UICulture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();

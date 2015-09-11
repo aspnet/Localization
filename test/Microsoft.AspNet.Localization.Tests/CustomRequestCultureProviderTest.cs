@@ -37,10 +37,6 @@ namespace Microsoft.Framework.Localization.Tests
                     Assert.Equal("ar", requestCulture.Culture.Name);
                     return Task.FromResult(0);
                 });
-            },
-            services =>
-            {
-                services.AddLocalization();
             }))
             {
                 var client = server.CreateClient();
