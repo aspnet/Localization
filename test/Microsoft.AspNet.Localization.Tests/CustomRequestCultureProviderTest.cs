@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Features;
 using Microsoft.AspNet.Localization;
 using Microsoft.AspNet.TestHost;
 using Microsoft.Framework.DependencyInjection;
@@ -31,7 +32,7 @@ namespace Microsoft.Framework.Localization.Tests
                 app.UseRequestLocalization(options);
                 app.Run(context =>
                 {
-                    var requestCultureFeature = context.GetFeature<IRequestCultureFeature>();
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
                     var requestCulture = requestCultureFeature.RequestCulture;
                     Assert.Equal("ar", requestCulture.Culture.Name);
                     return Task.FromResult(0);
