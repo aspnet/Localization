@@ -18,7 +18,7 @@ namespace Microsoft.Framework.Localization.Tests
     public class CustomRequestCultureProviderTest
     {
         [Fact]
-        public async void CustomRequestCultureProviderThatGetCultureInfoFromUrl()
+        public async void CustomRequestCultureProviderThatGetsCultureInfoFromUrl()
         {
             using (var server = TestServer.Create(app =>
             {

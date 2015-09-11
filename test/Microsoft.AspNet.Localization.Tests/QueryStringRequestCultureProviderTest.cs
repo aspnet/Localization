@@ -79,28 +79,27 @@ namespace Microsoft.Framework.Localization.Tests
             }
         }
 
-        //TODO: Uncomment if the PR #63 accepted
-        //[Fact]
-        //public async void GetSameCultureInfoIfCultureKeyIsMissing()
-        //{
-        //    using (var server = TestServer.Create(app =>
-        //    {
-        //        var options = new RequestLocalizationOptions();
-        //        app.UseRequestLocalization(options);
-        //        app.Run(context =>
-        //        {
-        //            var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
-        //            var requestCulture = requestCultureFeature.RequestCulture;
-        //            Assert.Equal("ar-SA", requestCulture.Culture.Name);
-        //            Assert.Equal("ar-SA", requestCulture.UICulture.Name);
-        //            return Task.FromResult(0);
-        //        });
-        //    }))
-        //    {
-        //        var client = server.CreateClient();
-        //        var response = await client.GetAsync("/page?ui-culture=ar-SA");
-        //    }
-        //}
+        [Fact]
+        public async void GetSameCultureInfoIfCultureKeyIsMissing()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions();
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
+                    Assert.Equal("ar-SA", requestCulture.Culture.Name);
+                    Assert.Equal("ar-SA", requestCulture.UICulture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                var response = await client.GetAsync("/page?ui-culture=ar-SA");
+            }
+        }
 
         [Fact]
         public async void GetSameCultureInfoIfUICultureKeyIsMissing()

@@ -69,7 +69,7 @@ namespace Microsoft.Framework.Localization.Tests
         }
 
         [Fact]
-        public async void GetDefaultCultureInfoIfCookieIsNotExist()
+        public async void GetDefaultCultureInfoIfCookieDoesNotExist()
         {
             using (var server = TestServer.Create(app =>
             {
