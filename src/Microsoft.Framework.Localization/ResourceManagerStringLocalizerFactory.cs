@@ -4,8 +4,8 @@
 using System;
 using System.Reflection;
 using System.Resources;
-using Microsoft.Framework.Internal;
 using Microsoft.Dnx.Runtime;
+using Microsoft.Framework.Internal;
 using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.Framework.Localization
