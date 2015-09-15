@@ -34,7 +34,7 @@ namespace Microsoft.Framework.Localization
             _resourcesRelativePath = localizationOptions.Value.ResourcesPath ?? string.Empty;
             if (!string.IsNullOrEmpty(_resourcesRelativePath))
             {
-                _resourcesRelativePath = _resourcesRelativePath.Replace("/", ".") + ".";
+                _resourcesRelativePath = _resourcesRelativePath.Replace("/", ".").Replace('\\', '.') + ".";
             }
         }
 
