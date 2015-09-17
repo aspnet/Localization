@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Features;
@@ -88,19 +89,19 @@ $@"<!doctype html>
                 await context.Response.WriteAsync($"<h1>{SR["Request Localization Sample"]}</h1>");
                 await context.Response.WriteAsync($"<h1>{SR["Hello"]}</h1>");
                 await context.Response.WriteAsync("<form id=\"theForm\" method=\"get\">");
-                await context.Response.WriteAsync($"<label for=\"culture\">{SR["Culture"]}: </label>");
-                await context.Response.WriteAsync("<select id=\"culture\" name=\"culture\">");
+                await context.Response.WriteAsync($"<label for=\"culture\"><b>{SR["Culture"]}:</b> </label>");
+                await context.Response.WriteAsync("<select id=\"culture\" name=\"culture\" style=\"margin-left:20px\">");
                 await WriteCultureSelectOptions(context);
                 await context.Response.WriteAsync("</select><br />");
-                await context.Response.WriteAsync($"<label for=\"uiCulture\">{SR["UI Culture"]}: </label>");
+                await context.Response.WriteAsync($"<label for=\"uiCulture\"><b>{SR["UI Culture"]}:</b> </label>");
                 await context.Response.WriteAsync("<select id=\"uiCulture\" name=\"ui-culture\">");
                 await WriteCultureSelectOptions(context);
-                await context.Response.WriteAsync("</select><br />");
+                await context.Response.WriteAsync("</select><br /><br />");
                 await context.Response.WriteAsync("<input type=\"submit\" value=\"go QS\" /> ");
                 await context.Response.WriteAsync($"<input type=\"button\" value=\"go cookie\" onclick='useCookie();' /> ");
-                await context.Response.WriteAsync($"<a href=\"/\" onclick='clearCookie();'>{SR["reset"]}</a>");
+                await context.Response.WriteAsync($"<input type=\"button\" value=\"{SR["reset"]}\" onclick='clearCookie();' />");
                 await context.Response.WriteAsync("</form>");
-                await context.Response.WriteAsync("<br />");
+                await context.Response.WriteAsync("<hr />");
                 await context.Response.WriteAsync("<table><tbody>");
                 await context.Response.WriteAsync($"<tr><th>Winning provider:</th><td>{requestCultureFeature.Provider.GetType().Name}</td></tr>");
                 await context.Response.WriteAsync($"<tr><th>{SR["Current request culture:"]}</th><td>{requestCulture.Culture.DisplayName} ({requestCulture.Culture})</td></tr>");
@@ -128,22 +129,22 @@ $@"<!doctype html>
             });
         }
 
-        private static async System.Threading.Tasks.Task WriteCultureSelectOptions(HttpContext context)
+        private static async Task WriteCultureSelectOptions(HttpContext context)
         {
-            await context.Response.WriteAsync($"    <option value=\"\">-- select --</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-US").Name}\">{new CultureInfo("en-US").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-AU").Name}\">{new CultureInfo("en-AU").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-GB").Name}\">{new CultureInfo("en-GB").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("fr-FR").Name}\">{new CultureInfo("fr-FR").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("es-ES").Name}\">{new CultureInfo("es-ES").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("ja-JP").Name}\">{new CultureInfo("ja-JP").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("zh").Name}\">{new CultureInfo("zh").DisplayName}</option>");
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("zh-CN").Name}\">{new CultureInfo("zh-CN").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"\">-- select --</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("en-US").Name}\">{new CultureInfo("en-US").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("en-AU").Name}\">{new CultureInfo("en-AU").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("en-GB").Name}\">{new CultureInfo("en-GB").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("fr-FR").Name}\">{new CultureInfo("fr-FR").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("es-ES").Name}\">{new CultureInfo("es-ES").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("ja-JP").Name}\">{new CultureInfo("ja-JP").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("zh").Name}\">{new CultureInfo("zh").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("zh-CN").Name}\">{new CultureInfo("zh-CN").DisplayName}</option>");
 #if DNX451
-            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("zh-CHT").Name}\">{new CultureInfo("zh-CHT").DisplayName}</option>");
+            await context.Response.WriteAsync($"<option value=\"{new CultureInfo("zh-CHT").Name}\">{new CultureInfo("zh-CHT").DisplayName}</option>");
 #endif
-            await context.Response.WriteAsync($"    <option value=\"en-NOTREAL\">English (Not a real locale)</option>");
-            await context.Response.WriteAsync($"    <option value=\"pp-NOTREAL\">Made-up (Not a real anything)</option>");
+            await context.Response.WriteAsync($"<option value=\"en-NOTREAL\">English (Not a real locale)</option>");
+            await context.Response.WriteAsync($"<option value=\"pp-NOTREAL\">Made-up (Not a real anything)</option>");
         }
     }
 }
