@@ -80,7 +80,11 @@ $@"<!doctype html>
         }}
 
         function clearCookie() {{
-            document.cookie='{CookieRequestCultureProvider.DefaultCookieName}=""""';
+            document.cookie = '{CookieRequestCultureProvider.DefaultCookieName}=""""';
+        }}
+        
+        function clearQueryString() {{
+            document.window.href = '/';
         }}
     </script>
 </head>
@@ -98,7 +102,7 @@ $@"<!doctype html>
                 await context.Response.WriteAsync("</select><br />");
                 await context.Response.WriteAsync("<input type=\"submit\" value=\"go QS\" /> ");
                 await context.Response.WriteAsync($"<input type=\"button\" value=\"go cookie\" onclick='useCookie();' /> ");
-                await context.Response.WriteAsync($"<a href=\"/\" onclick='clearCookie();'>{SR["reset"]}</a>");
+                await context.Response.WriteAsync($"<a href=\"/\" onclick='clearCookie();clearQueryString();'>{SR["reset"]}</a>");
                 await context.Response.WriteAsync("</form>");
                 await context.Response.WriteAsync("<br />");
                 await context.Response.WriteAsync("<table><tbody>");
