@@ -130,7 +130,7 @@ $@"<!doctype html>
 
         private static async System.Threading.Tasks.Task WriteCultureSelectOptions(HttpContext context)
         {
-            await context.Response.WriteAsync($"    <option value=\"\">-- select --</option>");
+            await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-US").Name}\">-- select --</option>");
             await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-US").Name}\">{new CultureInfo("en-US").DisplayName}</option>");
             await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-AU").Name}\">{new CultureInfo("en-AU").DisplayName}</option>");
             await context.Response.WriteAsync($"    <option value=\"{new CultureInfo("en-GB").Name}\">{new CultureInfo("en-GB").DisplayName}</option>");
