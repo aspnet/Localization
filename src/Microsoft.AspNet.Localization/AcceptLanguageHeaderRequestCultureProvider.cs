@@ -57,7 +57,7 @@ namespace Microsoft.AspNet.Localization
 
                         requestCulture = ValidateRequestCulture(requestCulture);
 
-                        if (requestCulture != null && requestCulture.Culture == culture)
+                        if (requestCulture?.Culture == culture)
                         {
                             return Task.FromResult(requestCulture);
                         }
