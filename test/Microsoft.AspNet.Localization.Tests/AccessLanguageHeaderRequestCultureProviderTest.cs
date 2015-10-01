@@ -104,6 +104,7 @@ namespace Microsoft.Framework.Localization.Tests
                 client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,ar-MA,en-US");
                 var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
                 var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
             }
         }
         
@@ -136,7 +137,9 @@ namespace Microsoft.Framework.Localization.Tests
             {
                 var client = server.CreateClient();
                 client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-GB,ar-YE,en-US");
+                var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
                 var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
             }
         }
     }
