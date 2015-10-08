@@ -431,7 +431,7 @@ namespace Microsoft.Extensions.Globalization
             "zh",
             "zh-CN",
             "zh-Hans",
-            "zh-Hans-CN"
+            "zh-Hans-CN",
             "zh-Hant",
             "zh-Hant-HK",
             "zh-Hant-MO",
