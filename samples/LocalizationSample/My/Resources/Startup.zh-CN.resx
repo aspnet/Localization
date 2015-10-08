@@ -120,4 +120,7 @@
   <data name="Hello" xml:space="preserve">
     <value>您好</value>
   </data>
+  <data name="Request Localization Sample" xml:space="preserve">
+    <value>本地化请求样例</value>
+  </data>
 </root>
