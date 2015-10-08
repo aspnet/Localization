@@ -434,8 +434,9 @@ namespace Microsoft.Extensions.Globalization
             "zh-Hans-CN",
             "zh-Hant",
             "zh-Hant-HK",
-            "zh-Hant-TW",
+            "zh-Hant-MO",
             "zh-Hant-SG",
+            "zh-Hant-TW"
             "zh-HK",
             "zh-MO",
             "zh-SG",
