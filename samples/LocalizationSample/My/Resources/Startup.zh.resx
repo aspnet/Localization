@@ -145,22 +145,28 @@
     <value>当前日期（通过请求的）：</value>
   </data>
   <data name="Current request culture:" xml:space="preserve">
-    <value>当前请求的语言习惯：</value>
+    <value>当前请求的语言：</value>
   </data>
   <data name="Current request UI culture:" xml:space="preserve">
-    <value>当前请请求的UI语言习惯：</value>
+    <value>当前请求的UI语言：</value>
   </data>
   <data name="Current thread culture:" xml:space="preserve">
-    <value>当前的语言习惯：</value>
+    <value>当前的语言：</value>
   </data>
   <data name="Current thread UI culture:" xml:space="preserve">
-    <value />
+    <value>当前UI的语言：</value>
   </data>
   <data name="Current time (invariant):" xml:space="preserve">
     <value>当前时间（预设的语言习惯）：</value>
   </data>
   <data name="Current time (request):" xml:space="preserve">
     <value>当前时间（通过请求的）：</value>
+  </data>
+  <data name="go cookie" xml:space="preserve">
+    <value>使用Cookie方式</value>
+  </data>
+  <data name="go QS" xml:space="preserve">
+    <value>使用Query String方式</value>
   </data>
   <data name="Hello" xml:space="preserve">
     <value>您好</value>
@@ -182,5 +188,8 @@
   </data>
   <data name="reset" xml:space="preserve">
     <value>重置</value>
+  </data>
+  <data name="UI Culture" xml:space="preserve">
+    <value>UI 语言</value>
   </data>
 </root>
