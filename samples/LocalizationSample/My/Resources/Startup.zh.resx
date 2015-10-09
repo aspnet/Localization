@@ -117,10 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Big number (invariant):" xml:space="preserve">
+    <value>数值（预设的语言习惯）：</value>
+  </data>
+  <data name="Big number (request):" xml:space="preserve">
+    <value>数值（通过请求的）：</value>
+  </data>
+  <data name="Big number negative (invariant):" xml:space="preserve">
+    <value>负数（预设的语言习惯）：</value>
+  </data>
+  <data name="Big number negative (request):" xml:space="preserve">
+    <value>负数（通过请求的）：</value>
+  </data>
+  <data name="Culture" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Current date (invariant full):" xml:space="preserve">
+    <value>当前日期（预设的语言习惯，完整的）：</value>
+  </data>
+  <data name="Current date (invariant):" xml:space="preserve">
+    <value>当前日期（预设的语言习惯）：</value>
+  </data>
+  <data name="Current date (request full):" xml:space="preserve">
+    <value>当前日期（通过请求的，完整的）：</value>
+  </data>
+  <data name="Current date (request):" xml:space="preserve">
+    <value>当前日期（通过请求的）：</value>
+  </data>
+  <data name="Current request culture:" xml:space="preserve">
+    <value>当前请求的语言习惯：</value>
+  </data>
+  <data name="Current request UI culture:" xml:space="preserve">
+    <value>当前请请求的UI语言习惯：</value>
+  </data>
+  <data name="Current thread culture:" xml:space="preserve">
+    <value>当前的语言习惯：</value>
+  </data>
+  <data name="Current thread UI culture:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Current time (invariant):" xml:space="preserve">
+    <value>当前时间（预设的语言习惯）：</value>
+  </data>
+  <data name="Current time (request):" xml:space="preserve">
+    <value>当前时间（通过请求的）：</value>
+  </data>
   <data name="Hello" xml:space="preserve">
     <value>您好</value>
   </data>
+  <data name="Money (invariant):" xml:space="preserve">
+    <value>货币（预设的语言习惯）：</value>
+  </data>
+  <data name="Money (request):" xml:space="preserve">
+    <value>货币（通过请求的）：</value>
+  </data>
+  <data name="Money negative (invariant):" xml:space="preserve">
+    <value>货币（预设的语言习惯，负数）：</value>
+  </data>
+  <data name="Money negative (request):" xml:space="preserve">
+    <value>货币（通过请求的，负数）：</value>
+  </data>
   <data name="Request Localization Sample" xml:space="preserve">
     <value>本地化请求样例</value>
+  </data>
+  <data name="reset" xml:space="preserve">
+    <value>重置</value>
   </data>
 </root>
