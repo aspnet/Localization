@@ -77,6 +77,11 @@ namespace Microsoft.AspNet.Localization
         /// <returns>The <see cref="RequestCulture"/> or <c>null</c> if parsing fails.</returns>
         public static RequestCulture ParseCookieValue(string value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
