@@ -40,7 +40,7 @@ namespace CultureInfoGenerator
                 Directory.CreateDirectory(resultPath);
 
             var OSVersion = Environment.OSVersion;
-            var DotNetVersion = Environment.Version;
+            var FrameworkVersion = Environment.Version;
 
             var cultures = CultureInfo.GetCultures(
                     CultureTypes.NeutralCultures
@@ -50,10 +50,10 @@ namespace CultureInfoGenerator
             var json = JsonConvert.SerializeObject(new CultureResult
             {
                 OS = OSVersion.ToString(),
-                Framework = DotNetVersion.ToString(),
+                Framework = FrameworkVersion.ToString(),
                 Result = cultures.Select(x => x.Name)
             });
-            File.WriteAllText(resultPath + OSVersion.ToString().Replace(" ", "_") + ".json", json);
+            File.WriteAllText(resultPath + OSVersion.ToString().Replace(" ", "_") + "-" + FrameworkVersion + ".json", json);
 
             Combine();
         }
