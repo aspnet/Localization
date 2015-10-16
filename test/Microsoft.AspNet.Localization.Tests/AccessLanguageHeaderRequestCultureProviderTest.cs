@@ -142,5 +142,136 @@ namespace Microsoft.Extensions.Localization.Tests
                 Assert.Equal(3, count);
             }
         }
+        
+        [Fact]
+        public async void GetRightCultureWhenRequestIsNotSupported_And_DefaultRequestCultureIsNotDefined()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions
+                {
+                    SupportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("nl-NL")
+                    },
+                    SupportedUICultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("nl-NL")
+                    }
+                };
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
+                    Assert.Equal("nl-NL", requestCulture.Culture.Name);
+                    Assert.Equal("nl-NL", requestCulture.Culture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ar-SA,nl-NL,en-US");
+                var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
+                var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
+            }
+        }
+        
+        [Fact]
+        public async void GetRightCultureWhenRequestIsNotSupported_And_DefaultRequestCultureIsNotSupported()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions
+                {
+                    SupportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("nl-NL")
+                    },
+                    SupportedUICultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("nl-NL")
+                    }
+                    , DefaultRequestCulture = new RequestCulture(new CultureInfo("en-AU"), new CultureInfo("en-AU"))
+                };
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
+                    Assert.Equal("nl-NL", requestCulture.Culture.Name);
+                    Assert.Equal("nl-NL", requestCulture.Culture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ar-SA,nl-NL,en-US");
+                var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
+                var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
+            }
+        }
+               
+        [Fact]
+        public async void GetRightCultureWhenRequestIsNotSupported_And_SupportedCulturesAreNotDefined()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions();
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
+                    Assert.Equal("ar-SA", requestCulture.Culture.Name);
+                    Assert.Equal("ar-SA", requestCulture.Culture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ar-SA,nl-NL,en-US");
+                var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
+                var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
+            }
+        }
+               
+        [Fact]
+        public async void GetRightCultureWhenRequestIsNotSupported_And_SupportedCulturesAreEmpty()
+        {
+            using (var server = TestServer.Create(app =>
+            {
+                var options = new RequestLocalizationOptions
+                {
+                    SupportedCultures = new List<CultureInfo>
+                    {
+                        
+                    },
+                    SupportedUICultures = new List<CultureInfo>
+                    {
+                        
+                    }
+                };
+                app.UseRequestLocalization(options);
+                app.Run(context =>
+                {
+                    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+                    var requestCulture = requestCultureFeature.RequestCulture;
+                    Assert.Equal("en-US", requestCulture.Culture.Name);
+                    Assert.Equal("en-US", requestCulture.Culture.Name);
+                    return Task.FromResult(0);
+                });
+            }))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ar-SA,nl-NL,en-US");
+                var count = client.DefaultRequestHeaders.AcceptLanguage.Count;
+                var response = await client.GetAsync(string.Empty);
+                Assert.Equal(3, count);
+            }
+        }
     }
 }

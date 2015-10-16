@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 
@@ -39,20 +40,22 @@ namespace Microsoft.AspNet.Localization
 
             var result = requestCulture;
 
-            if (Options.SupportedCultures != null && !Options.SupportedCultures.Contains(result.Culture))
+            if (Options.SupportedCultures?.Contains(result.Culture) == false)
             {
-                result = new RequestCulture(Options.DefaultRequestCulture.Culture, result.UICulture);
+                var culture = Options.SupportedCultures.Contains(Options.DefaultRequestCulture.Culture)
+                    ? Options.DefaultRequestCulture.Culture
+                    : Options.SupportedCultures.FirstOrDefault() ?? Options.DefaultRequestCulture.Culture;
+
+                result = new RequestCulture(culture, result.UICulture);
             }
 
-            if (Options.SupportedUICultures != null && !Options.SupportedUICultures.Contains(result.UICulture))
+            if (Options.SupportedUICultures?.Contains(result.UICulture) == false)
             {
-                result = new RequestCulture(result.Culture, Options.DefaultRequestCulture.UICulture);
-            }
+                var uiCulture = Options.SupportedUICultures.Contains(Options.DefaultRequestCulture.UICulture)
+                    ? Options.DefaultRequestCulture.UICulture
+                    : Options.SupportedUICultures.FirstOrDefault() ?? Options.DefaultRequestCulture.UICulture;
 
-            if (requestCulture.Culture != result.Culture && requestCulture.UICulture != result.UICulture)
-            {
-                // Both cultures were invalid, just return null
-                return null;
+                result = new RequestCulture(result.Culture, uiCulture);
             }
 
             return result;
