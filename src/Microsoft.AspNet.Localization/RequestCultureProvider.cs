@@ -40,24 +40,20 @@ namespace Microsoft.AspNet.Localization
 
             var result = requestCulture;
 
-            if (Options.SupportedCultures != null && !Options.SupportedCultures.Contains(result.Culture))
+            if (Options.SupportedCultures?.Contains(result.Culture) == false)
             {
                 var culture = Options.SupportedCultures.Contains(Options.DefaultRequestCulture.Culture)
                     ? Options.DefaultRequestCulture.Culture
-                    : Options.SupportedCultures.Any()
-                        ? Options.SupportedCultures[0]
-                        : Options.DefaultRequestCulture.Culture;
+                    : Options.SupportedCultures.FirstOrDefault() ?? Options.DefaultRequestCulture.Culture;
 
                 result = new RequestCulture(culture, result.UICulture);
             }
 
-            if (Options.SupportedUICultures != null && !Options.SupportedUICultures.Contains(result.UICulture))
+            if (Options.SupportedUICultures?.Contains(result.UICulture) == false)
             {
                 var uiCulture = Options.SupportedUICultures.Contains(Options.DefaultRequestCulture.UICulture)
                     ? Options.DefaultRequestCulture.UICulture
-                    : Options.SupportedUICultures.Any()
-                        ? Options.SupportedUICultures[0]
-                        : Options.DefaultRequestCulture.UICulture;
+                    : Options.SupportedUICultures.FirstOrDefault() ?? Options.DefaultRequestCulture.UICulture;
 
                 result = new RequestCulture(result.Culture, uiCulture);
             }
