@@ -19,13 +19,20 @@ namespace Microsoft.AspNet.Localization
     {
         private readonly RequestDelegate _next;
         private readonly RequestLocalizationOptions _options;
+        private readonly RequestCulture _defaultRequestCulture;
 
         /// <summary>
         /// Creates a new <see cref="RequestLocalizationMiddleware"/>.
         /// </summary>
         /// <param name="next">The <see cref="RequestDelegate"/> representing the next middleware in the pipeline.</param>
-        /// <param name="options">The <see cref="RequestLocalizationOptions"/> representing the options for the <see cref="RequestLocalizationMiddleware"/>.</param>
-        public RequestLocalizationMiddleware(RequestDelegate next, RequestLocalizationOptions options)
+        /// <param name="options">The <see cref="RequestLocalizationOptions"/> representing the options for the
+        /// <see cref="RequestLocalizationMiddleware"/>.</param>
+        /// <param name="defaultRequestCulture">The default <see cref="RequestCulture"/> to use if none of the
+        /// requested cultures match supported cultures.</param>
+        public RequestLocalizationMiddleware(
+            RequestDelegate next,
+            RequestLocalizationOptions options,
+            RequestCulture defaultRequestCulture)
         {
             if (next == null)
             {
@@ -37,8 +44,14 @@ namespace Microsoft.AspNet.Localization
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (defaultRequestCulture == null)
+            {
+                throw new ArgumentNullException(nameof(defaultRequestCulture));
+            }
+
             _next = next;
             _options = options;
+            _defaultRequestCulture = defaultRequestCulture;
         }
 
         /// <summary>
@@ -53,8 +66,7 @@ namespace Microsoft.AspNet.Localization
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var requestCulture = _options.DefaultRequestCulture ??
-                new RequestCulture(CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+            var requestCulture = _defaultRequestCulture;
 
             IRequestCultureProvider winningProvider = null;
 
@@ -62,6 +74,10 @@ namespace Microsoft.AspNet.Localization
             {
                 foreach (var provider in _options.RequestCultureProviders)
                 {
+                    if (provider is RequestCultureProvider)
+                    {
+                        ((RequestCultureProvider)provider).Options = _options;
+                    }
                     var result = await provider.DetermineRequestCulture(context);
                     if (result != null)
                     {

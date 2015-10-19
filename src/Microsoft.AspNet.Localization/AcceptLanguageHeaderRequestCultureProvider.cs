@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
@@ -55,17 +57,10 @@ namespace Microsoft.AspNet.Localization
                 // the CultureInfo ctor
                 if (language.Value != null)
                 {
-                    var culture = CultureInfoCache.GetCultureInfo(language.Value);
+                    var culture = CultureInfoCache.GetCultureInfo(language.Value, Options.SupportedCultures);
                     if (culture != null)
                     {
-                        var requestCulture = new RequestCulture(culture);
-
-                        requestCulture = ValidateRequestCulture(requestCulture);
-
-                        if (requestCulture?.Culture == culture)
-                        {
-                            return Task.FromResult(requestCulture);
-                        }
+                        return Task.FromResult(new RequestCulture(culture));
                     }
                 }
             }

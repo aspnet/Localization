@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Globalization;
 using Microsoft.AspNet.Localization;
 
 namespace Microsoft.AspNet.Builder
@@ -16,17 +17,26 @@ namespace Microsoft.AspNet.Builder
         /// requests based on information provided by the client using the default options.
         /// </summary>
         /// <param name="builder">The <see cref="IApplicationBuilder"/>.</param>
+        /// <param name="defaultRequestCulture">The default <see cref="RequestCulture"/> to use if none of the
+        /// requested cultures match supported cultures.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
-        public static IApplicationBuilder UseRequestLocalization(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseRequestLocalization(
+            this IApplicationBuilder builder,
+            RequestCulture defaultRequestCulture)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
+            if (defaultRequestCulture == null)
+            {
+                throw new ArgumentNullException(nameof(defaultRequestCulture));
+            }
+
             var options = new RequestLocalizationOptions();
 
-            return UseRequestLocalization(builder, options);
+            return UseRequestLocalization(builder, options, defaultRequestCulture);
         }
 
         /// <summary>
@@ -35,10 +45,13 @@ namespace Microsoft.AspNet.Builder
         /// </summary>
         /// <param name="builder">The <see cref="IApplicationBuilder"/>.</param>
         /// <param name="options">The options to configure the middleware with.</param>
+        /// <param name="defaultRequestCulture">The default <see cref="RequestCulture"/> to use if none of the
+        /// requested cultures match supported cultures.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
         public static IApplicationBuilder UseRequestLocalization(
             this IApplicationBuilder builder,
-            RequestLocalizationOptions options)
+            RequestLocalizationOptions options,
+            RequestCulture defaultRequestCulture)
         {
             if (builder == null)
             {
@@ -50,7 +63,12 @@ namespace Microsoft.AspNet.Builder
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return builder.UseMiddleware<RequestLocalizationMiddleware>(options);
+            if (defaultRequestCulture == null)
+            {
+                throw new ArgumentNullException(nameof(defaultRequestCulture));
+            }
+
+            return builder.UseMiddleware<RequestLocalizationMiddleware>(options, defaultRequestCulture);
         }
     }
 }

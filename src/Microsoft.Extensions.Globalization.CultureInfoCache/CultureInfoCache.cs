@@ -2,14 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Microsoft.Extensions.Globalization
 {
     /// <summary>
     /// Provides read-only cached instances of <see cref="CultureInfo"/>.
     /// </summary>
-    public static partial class CultureInfoCache
+    public static class CultureInfoCache
     {
         private static readonly ConcurrentDictionary<string, CacheEntry> _cache = new ConcurrentDictionary<string, CacheEntry>();
 
@@ -22,11 +24,12 @@ namespace Microsoft.Extensions.Globalization
         /// A read-only cached <see cref="CultureInfo"/> or <c>null</c> a match wasn't found in
         /// <see cref="KnownCultureNames"/>.
         /// </returns>
-        public static CultureInfo GetCultureInfo(string name)
+        public static CultureInfo GetCultureInfo(string name, IList<CultureInfo> SupportedCultures)
         {
             // Allow only known culture names as this API is called with input from users (HTTP requests) and
             // creating CultureInfo objects is expensive and we don't want it to throw either.
-            if (name == null || !KnownCultureNames.Contains(name))
+            if (name == null || SupportedCultures == null ||
+                SupportedCultures.Where( s => s.Name.ToLowerInvariant() == name.ToLowerInvariant()).FirstOrDefault() == null)
             {
                 return null;
             }

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.Globalization;
@@ -43,9 +45,7 @@ namespace Microsoft.AspNet.Localization
                 return Task.FromResult((RequestCulture)null);
             }
 
-            var requestCulture = ParseCookieValue(cookie);
-
-            requestCulture = ValidateRequestCulture(requestCulture);
+            var requestCulture = ParseCookieValue(cookie, Options.SupportedCultures, Options.SupportedUICultures);
 
             return Task.FromResult(requestCulture);
         }
@@ -75,7 +75,10 @@ namespace Microsoft.AspNet.Localization
         /// </summary>
         /// <param name="value">The cookie value to parse.</param>
         /// <returns>The <see cref="RequestCulture"/> or <c>null</c> if parsing fails.</returns>
-        public static RequestCulture ParseCookieValue(string value)
+        public static RequestCulture ParseCookieValue(
+            string value,
+            IList<CultureInfo> supportedCultures,
+            IList<CultureInfo> supportedUICultures)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -100,8 +103,8 @@ namespace Microsoft.AspNet.Localization
             var cultureName = potentialCultureName.Substring(_culturePrefix.Length);
             var uiCultureName = potentialUICultureName.Substring(_uiCulturePrefix.Length);
 
-            var culture = CultureInfoCache.GetCultureInfo(cultureName);
-            var uiCulture = CultureInfoCache.GetCultureInfo(uiCultureName);
+            var culture = CultureInfoCache.GetCultureInfo(cultureName, supportedCultures);
+            var uiCulture = CultureInfoCache.GetCultureInfo(uiCultureName, supportedUICultures);
 
             if (culture == null || uiCulture == null)
             {

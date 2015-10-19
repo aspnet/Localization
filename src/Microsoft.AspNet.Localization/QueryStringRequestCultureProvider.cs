@@ -71,8 +71,8 @@ namespace Microsoft.AspNet.Localization
                 queryCulture = queryUICulture;
             }
 
-            var culture = CultureInfoCache.GetCultureInfo(queryCulture);
-            var uiCulture = CultureInfoCache.GetCultureInfo(queryUICulture);
+            var culture = CultureInfoCache.GetCultureInfo(queryCulture, Options.SupportedCultures);
+            var uiCulture = CultureInfoCache.GetCultureInfo(queryUICulture, Options.SupportedUICultures);
 
             if (culture == null || uiCulture == null)
             {
@@ -80,8 +80,6 @@ namespace Microsoft.AspNet.Localization
             }
 
             var requestCulture = new RequestCulture(culture, uiCulture);
-
-            requestCulture = ValidateRequestCulture(requestCulture);
 
             return Task.FromResult(requestCulture);
         }
