@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.Localization.Tests
                     }
                 };
 
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Localization.Tests
             using (var server = TestServer.Create(app =>
             {
                 var options = new RequestLocalizationOptions();
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("ar-SA")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -116,7 +116,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("ar-SA")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -147,7 +147,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("ar-SA")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -179,7 +179,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("ar-SA")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -215,7 +215,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 provider.QueryStringKey = "c";
                 provider.UIQueryStringKey = "uic";
                 options.RequestCultureProviders.Insert(0, provider);
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -251,7 +251,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 provider.QueryStringKey = "c";
                 provider.UIQueryStringKey = "uic";
                 options.RequestCultureProviders.Insert(0, provider);
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();

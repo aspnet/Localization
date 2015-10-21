@@ -18,9 +18,9 @@ namespace Microsoft.AspNet.Localization
         /// </summary>
         /// <param name="httpContext">The <see cref="HttpContext"/> for the request.</param>
         /// <returns>
-        ///     The determined <see cref="RequestCulture"/>.
-        ///     Returns <c>null</c> if the provider couldn't determine a <see cref="RequestCulture"/>.
+        ///     The determined <see cref="ProviderResultCulture"/>.
+        ///     Returns <c>null</c> if the provider couldn't determine a <see cref="ProviderResultCulture"/>.
         /// </returns>
-        Task<RequestCulture> DetermineRequestCulture(HttpContext httpContext);
+        Task<ProviderResultCulture> DetermineProviderResultCulture(HttpContext httpContext);
     }
 }

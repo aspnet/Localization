@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Localization
         public int MaximumAcceptLanguageHeaderValuesToTry { get; set; } = 3;
 
         /// <inheritdoc />
-        public override Task<RequestCulture> DetermineRequestCulture(HttpContext httpContext)
+        public override Task<ProviderResultCulture> DetermineProviderResultCulture(HttpContext httpContext)
         {
             if (httpContext == null)
             {
@@ -36,7 +36,7 @@ namespace Microsoft.AspNet.Localization
 
             if (acceptLanguageHeader == null || acceptLanguageHeader.Count == 0)
             {
-                return Task.FromResult((RequestCulture)null);
+                return Task.FromResult((ProviderResultCulture)null);
             }
 
             var languages = acceptLanguageHeader.AsEnumerable();
@@ -51,21 +51,12 @@ namespace Microsoft.AspNet.Localization
             var orderedLanguages = languages.OrderByDescending(h => h, StringWithQualityHeaderValueComparer.QualityComparer)
                 .ToList();
 
-            foreach (var language in orderedLanguages)
+            if (orderedLanguages.Any())
             {
-                // Allow empty string values as they map to InvariantCulture, whereas null culture values will throw in
-                // the CultureInfo ctor
-                if (language.Value != null)
-                {
-                    var culture = CultureInfoCache.GetCultureInfo(language.Value, Options.SupportedCultures);
-                    if (culture != null)
-                    {
-                        return Task.FromResult(new RequestCulture(culture));
-                    }
-                }
+                return Task.FromResult(new ProviderResultCulture(orderedLanguages.Select(x => x.Value).ToList()));
             }
 
-            return Task.FromResult((RequestCulture)null);
+            return Task.FromResult((ProviderResultCulture)null);
         }
     }
 }

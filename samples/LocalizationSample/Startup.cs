@@ -43,7 +43,7 @@ namespace LocalizationSample
                 
             //}));
 
-            app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+            app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
 
             app.Use(async (context, next) =>
             {

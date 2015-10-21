@@ -2,12 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Features;
+using Microsoft.Extensions.Globalization;
 
 namespace Microsoft.AspNet.Localization
 {
@@ -74,16 +76,45 @@ namespace Microsoft.AspNet.Localization
             {
                 foreach (var provider in _options.RequestCultureProviders)
                 {
-                    if (provider is RequestCultureProvider)
+                    var providerResultCulture = await provider.DetermineProviderResultCulture(context);
+                    if (providerResultCulture != null)
                     {
-                        ((RequestCultureProvider)provider).Options = _options;
-                    }
-                    var result = await provider.DetermineRequestCulture(context);
-                    if (result != null)
-                    {
-                        requestCulture = result;
-                        winningProvider = provider;
-                        break;
+                        var cultures = providerResultCulture.Cultures;
+                        var uiCultures = providerResultCulture.UICultures;
+
+                        CultureInfo cultureInfo = null;
+                        CultureInfo uiCultureInfo = null;
+                        if (_options.SupportedCultures != null)
+                        {
+                            cultureInfo = GetCultureInfo(cultures, _options.SupportedCultures);
+                        }
+
+                        if (_options.SupportedUICultures != null)
+                        {
+                            uiCultureInfo = GetCultureInfo(uiCultures, _options.SupportedUICultures);
+                        }
+
+                        if (cultureInfo == null && uiCultureInfo == null)
+                        {
+                            continue;
+                        }
+                        if (cultureInfo == null && uiCultureInfo != null)
+                        {
+                            cultureInfo = _defaultRequestCulture.Culture;
+                        }
+                        if (cultureInfo != null && uiCultureInfo == null)
+                        {
+                            uiCultureInfo = _defaultRequestCulture.UICulture;
+                        }
+
+                        var result = new RequestCulture(cultureInfo, uiCultureInfo);
+
+                        if (result != null)
+                        {
+                            requestCulture = result;
+                            winningProvider = provider;
+                            break;
+                        }
                     }
                 }
             }
@@ -104,6 +135,25 @@ namespace Microsoft.AspNet.Localization
             CultureInfo.CurrentCulture = requestCulture.Culture;
             CultureInfo.CurrentUICulture = requestCulture.UICulture;
 #endif
+        }
+
+        private CultureInfo GetCultureInfo(List<string> cultures, IList<CultureInfo> supportedCultures)
+        {
+            foreach (var culture in cultures)
+            {
+                // Allow empty string values as they map to InvariantCulture, whereas null culture values will throw in
+                // the CultureInfo ctor
+                if (culture != null)
+                {
+                    var cultureInfo = CultureInfoCache.GetCultureInfo(culture, supportedCultures);
+                    if (cultureInfo != null)
+                    {
+                        return cultureInfo;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

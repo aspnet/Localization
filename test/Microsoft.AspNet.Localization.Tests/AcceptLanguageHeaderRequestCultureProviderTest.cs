@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("en-US")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -58,7 +58,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("en-US")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("fr-FR")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("fr-FR"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("af-ZA")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("fr-FR")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("fr-FR"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.Localization.Tests
                         new CultureInfo("ar-YE")
                     }
                 };
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();

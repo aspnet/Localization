@@ -36,10 +36,10 @@ namespace Microsoft.Extensions.Localization.Tests
                 options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
                 {
                     var culture = GetCultureInfoFromUrl(context, options.SupportedCultures);
-                    var requestCulture = new RequestCulture(culture);
+                    var requestCulture = new ProviderResultCulture(culture);
                     return Task.FromResult(requestCulture);
                 }));
-                app.UseRequestLocalization(options, new RequestCulture(new CultureInfo("en-US")));
+                app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
                 app.Run(context =>
                 {
                     var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.Localization.Tests
             }
         }
 
-        private CultureInfo GetCultureInfoFromUrl(HttpContext context, IList<CultureInfo> supportedCultures)
+        private string GetCultureInfoFromUrl(HttpContext context, IList<CultureInfo> supportedCultures)
         {
             var currentCulture = "en";
             var segments = context.Request.Path.Value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
@@ -62,7 +62,8 @@ namespace Microsoft.Extensions.Localization.Tests
             {
                 currentCulture = segments[0];
             }
-            return CultureInfoCache.GetCultureInfo(currentCulture, supportedCultures);
+
+            return currentCulture;
         }
     }
 }
