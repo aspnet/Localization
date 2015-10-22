@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
                 {
                     var culture = GetCultureInfoFromUrl(context, options.SupportedCultures);
-                    var requestCulture = new ProviderResultCulture(culture);
+                    var requestCulture = new ProviderCultureResult(culture);
                     return Task.FromResult(requestCulture);
                 }));
                 app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));

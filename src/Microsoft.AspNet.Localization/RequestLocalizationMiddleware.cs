@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.Localization
             {
                 foreach (var provider in _options.RequestCultureProviders)
                 {
-                    var providerResultCulture = await provider.DetermineProviderResultCulture(context);
+                    var providerResultCulture = await provider.DetermineProviderCultureResult(context);
                     if (providerResultCulture != null)
                     {
                         var cultures = providerResultCulture.Cultures;
@@ -137,7 +137,7 @@ namespace Microsoft.AspNet.Localization
 #endif
         }
 
-        private CultureInfo GetCultureInfo(List<string> cultures, IList<CultureInfo> supportedCultures)
+        private CultureInfo GetCultureInfo(IList<string> cultures, IList<CultureInfo> supportedCultures)
         {
             foreach (var culture in cultures)
             {

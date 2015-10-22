@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Localization
         public int MaximumAcceptLanguageHeaderValuesToTry { get; set; } = 3;
 
         /// <inheritdoc />
-        public override Task<ProviderResultCulture> DetermineProviderResultCulture(HttpContext httpContext)
+        public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
         {
             if (httpContext == null)
             {
@@ -36,7 +36,7 @@ namespace Microsoft.AspNet.Localization
 
             if (acceptLanguageHeader == null || acceptLanguageHeader.Count == 0)
             {
-                return Task.FromResult((ProviderResultCulture)null);
+                return Task.FromResult((ProviderCultureResult)null);
             }
 
             var languages = acceptLanguageHeader.AsEnumerable();
@@ -49,14 +49,14 @@ namespace Microsoft.AspNet.Localization
             }
 
             var orderedLanguages = languages.OrderByDescending(h => h, StringWithQualityHeaderValueComparer.QualityComparer)
-                .ToList();
+                .Select(x => x.Value).ToList();
 
             if (orderedLanguages.Any())
             {
-                return Task.FromResult(new ProviderResultCulture(orderedLanguages.Select(x => x.Value).ToList()));
+                return Task.FromResult(new ProviderCultureResult(orderedLanguages));
             }
 
-            return Task.FromResult((ProviderResultCulture)null);
+            return Task.FromResult((ProviderCultureResult)null);
         }
     }
 }

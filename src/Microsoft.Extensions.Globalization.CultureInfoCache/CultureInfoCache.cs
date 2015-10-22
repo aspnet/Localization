@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,11 +28,10 @@ namespace Microsoft.Extensions.Globalization
         /// </returns>
         public static CultureInfo GetCultureInfo(string name, IList<CultureInfo> supportedCultures)
         {
-            var lowerInvariantName = name.ToLowerInvariant();
             // Allow only known culture names as this API is called with input from users (HTTP requests) and
             // creating CultureInfo objects is expensive and we don't want it to throw either.
             if (name == null || supportedCultures == null ||
-                !supportedCultures.Any(supportedCulture => supportedCulture.Name.ToLowerInvariant() == lowerInvariantName))
+                !supportedCultures.Any(supportedCulture => string.Equals(supportedCulture.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 return null;
             }

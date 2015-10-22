@@ -17,7 +17,7 @@ namespace Microsoft.AspNet.Localization
         public RequestLocalizationOptions Options { get; set; }
 
         /// <inheritdoc />
-        public abstract Task<ProviderResultCulture> DetermineProviderResultCulture(HttpContext httpContext);
+        public abstract Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext);
 
     }
 }

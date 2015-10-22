@@ -31,7 +31,7 @@ namespace Microsoft.AspNet.Localization
         public string CookieName { get; set; } = DefaultCookieName;
 
         /// <inheritdoc />
-        public override Task<ProviderResultCulture> DetermineProviderResultCulture(HttpContext httpContext)
+        public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
         {
             if (httpContext == null)
             {
@@ -42,7 +42,7 @@ namespace Microsoft.AspNet.Localization
 
             if (cookie == null)
             {
-                return Task.FromResult((ProviderResultCulture)null);
+                return Task.FromResult((ProviderCultureResult)null);
             }
 
             var providerResultCulture = ParseCookieValue(cookie);
@@ -75,7 +75,7 @@ namespace Microsoft.AspNet.Localization
         /// </summary>
         /// <param name="value">The cookie value to parse.</param>
         /// <returns>The <see cref="RequestCulture"/> or <c>null</c> if parsing fails.</returns>
-        public static ProviderResultCulture ParseCookieValue(string value)
+        public static ProviderCultureResult ParseCookieValue(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -118,7 +118,7 @@ namespace Microsoft.AspNet.Localization
                 cultureName = uiCultureName;
             }
 
-            return new ProviderResultCulture(cultureName, uiCultureName);
+            return new ProviderCultureResult(cultureName, uiCultureName);
         }
     }
 }
