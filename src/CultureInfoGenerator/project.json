@@ -12,6 +12,6 @@
         "CultureInfoGenerator": "CultureInfoGenerator"
     },
     "frameworks": {
-        "dnx451": { }
+        "net451": { }
     }
 }
