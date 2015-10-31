@@ -1,0 +1,1 @@
+Sample demonstrating ASP.NET 5 Localization middleware.
