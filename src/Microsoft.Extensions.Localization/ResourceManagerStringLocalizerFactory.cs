@@ -21,6 +21,8 @@ namespace Microsoft.Extensions.Localization
 
         private readonly string _resourcesRelativePath;
 
+        private readonly ResourceLookupBehavior _resourceLookupBehavior;
+
         /// <summary>
         /// Creates a new <see cref="ResourceManagerStringLocalizer"/>.
         /// </summary>
@@ -42,6 +44,7 @@ namespace Microsoft.Extensions.Localization
 
             _applicationEnvironment = applicationEnvironment;
             _resourcesRelativePath = localizationOptions.Value.ResourcesPath ?? string.Empty;
+            _resourceLookupBehavior = localizationOptions.Value.ResourceLookupBehavior;
             if (!string.IsNullOrEmpty(_resourcesRelativePath))
             {
                 _resourcesRelativePath = _resourcesRelativePath.Replace(Path.AltDirectorySeparatorChar, '.')
@@ -71,7 +74,8 @@ namespace Microsoft.Extensions.Localization
                 new ResourceManager(baseName, assembly),
                 assembly,
                 baseName,
-                _resourceNamesCache);
+                _resourceNamesCache,
+                _resourceLookupBehavior);
         }
 
         /// <summary>
@@ -95,7 +99,8 @@ namespace Microsoft.Extensions.Localization
                 new ResourceManager(baseName, assembly),
                 assembly,
                 baseName,
-                _resourceNamesCache);
+                _resourceNamesCache,
+                _resourceLookupBehavior);
         }
     }
 }

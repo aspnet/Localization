@@ -12,5 +12,10 @@ namespace Microsoft.Extensions.Localization
         /// The relative path under application root where resource files are located.
         /// </summary>
         public string ResourcesPath { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The behavior to apply when a given resource key appears to be missing
+        /// </summary>
+        public ResourceLookupBehavior ResourceLookupBehavior { get; set; } = ResourceLookupBehavior.UseNameIfNotFound;
     }
 }
