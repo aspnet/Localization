@@ -1,13 +1,13 @@
-﻿{
-    "dependencies": {
-        "Microsoft.AspNet.Localization": "1.0.0-*",
-        "Microsoft.AspNet.TestHost": "1.0.0-*",
-        "xunit": "2.1.0-*",
-        "xunit.runner.aspnet": "2.0.0-aspnet-*"
-    },
+{
+  "dependencies": {
+    "Microsoft.AspNet.Localization": "1.0.0-rc1-final",
+    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+    "xunit": "2.1.0-*",
+    "xunit.runner.aspnet": "2.0.0-aspnet-rc1-final"
+  },
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": { }
+    "dnx451": {},
+    "dnxcore50": {}
   },
   "commands": {
     "test": "xunit.runner.aspnet"

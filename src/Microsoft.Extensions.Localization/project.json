@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "description": "Application localization services.",
   "repository": {
     "type": "git",
@@ -10,23 +10,23 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-*"
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Localization.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final"
   },
   "frameworks": {
     "net451": {},
     "dotnet5.4": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-*",
-        "System.Collections": "4.0.11-beta-*",
-        "System.Collections.Concurrent": "4.0.11-beta-*",
-        "System.Globalization": "4.0.11-beta-*",
-        "System.Linq": "4.0.1-beta-*",
-        "System.Resources.ReaderWriter": "4.0.0-beta-*",
-        "System.Resources.ResourceManager": "4.0.1-beta-*",
-        "System.Threading": "4.0.11-beta-*"
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Collections.Concurrent": "4.0.11-beta-23516",
+        "System.Globalization": "4.0.11-beta-23516",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Resources.ReaderWriter": "4.0.0-beta-23516",
+        "System.Resources.ResourceManager": "4.0.1-beta-23516",
+        "System.Threading": "4.0.11-beta-23516"
       }
     }
   }

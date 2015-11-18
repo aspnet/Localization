@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0-rc1-final",
   "description": "Provides cached instances of CultureInfo using a generated list of known culture names for use in scenarios where unbounded CultureInfo creation is undesirable.",
   "repository": {
     "type": "git",
@@ -13,10 +13,10 @@
     "net451": {},
     "dotnet5.4": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-*",
-        "System.Collections": "4.0.11-beta-*",
-        "System.Collections.Concurrent": "4.0.11-beta-*",
-        "System.Globalization": "4.0.11-beta-*"
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Collections": "4.0.11-beta-23516",
+        "System.Collections.Concurrent": "4.0.11-beta-23516",
+        "System.Globalization": "4.0.11-beta-23516"
       }
     }
   }
