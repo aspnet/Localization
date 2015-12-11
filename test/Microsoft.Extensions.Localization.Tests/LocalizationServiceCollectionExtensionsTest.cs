@@ -1,4 +1,4 @@
-// Copyright (c) .NET Foundation. All rights reserved. 
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Linq;
@@ -21,18 +21,30 @@ namespace Microsoft.Extensions.Localization.Test
 
             // Assert
             var services = collection.ToList();
-            Assert.Equal(3, services.Count);
-
-            Assert.Equal(typeof(IStringLocalizerFactory), services[0].ServiceType);
-            Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), services[0].ImplementationType);
-            Assert.Equal(ServiceLifetime.Singleton, services[0].Lifetime);
-
-            Assert.Equal(typeof(IStringLocalizer<>), services[1].ServiceType);
-            Assert.Equal(typeof(StringLocalizer<>), services[1].ImplementationType);
-            Assert.Equal(ServiceLifetime.Transient, services[1].Lifetime);
-
-            Assert.Equal(typeof(IOptions<>), services[2].ServiceType);
-            Assert.Equal(ServiceLifetime.Singleton, services[2].Lifetime);
+            Assert.Collection(
+                services,
+                element =>
+                {
+                    Assert.Equal(typeof(IStringLocalizerFactory), element.ServiceType);
+                    Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), element.ImplementationType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IStringLocalizer<>), element.ServiceType);
+                    Assert.Equal(typeof(StringLocalizer<>), element.ImplementationType);
+                    Assert.Equal(ServiceLifetime.Transient, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IOptions<>), element.ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IOptionsMonitor<>), element.ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                });
         }
 
         [Fact]
@@ -46,21 +58,35 @@ namespace Microsoft.Extensions.Localization.Test
 
             // Assert
             var services = collection.ToList();
-            Assert.Equal(4, services.Count);
-
-            Assert.Equal(typeof(IStringLocalizerFactory), services[0].ServiceType);
-            Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), services[0].ImplementationType);
-            Assert.Equal(ServiceLifetime.Singleton, services[0].Lifetime);
-
-            Assert.Equal(typeof(IStringLocalizer<>), services[1].ServiceType);
-            Assert.Equal(typeof(StringLocalizer<>), services[1].ImplementationType);
-            Assert.Equal(ServiceLifetime.Transient, services[1].Lifetime);
-
-            Assert.Equal(typeof(IConfigureOptions<LocalizationOptions>), services[2].ServiceType);
-            Assert.Equal(ServiceLifetime.Singleton, services[2].Lifetime);
-
-            Assert.Equal(typeof(IOptions<>), services[3].ServiceType);
-            Assert.Equal(ServiceLifetime.Singleton, services[3].Lifetime);
+            Assert.Collection(
+                services,
+                element =>
+                {
+                    Assert.Equal(typeof(IStringLocalizerFactory), element.ServiceType);
+                    Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), element.ImplementationType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IStringLocalizer<>), element.ServiceType);
+                    Assert.Equal(typeof(StringLocalizer<>), element.ImplementationType);
+                    Assert.Equal(ServiceLifetime.Transient, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IConfigureOptions<LocalizationOptions>), element.ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IOptions<>), element.ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                },
+                element =>
+                {
+                    Assert.Equal(typeof(IOptionsMonitor<>), element.ServiceType);
+                    Assert.Equal(ServiceLifetime.Singleton, element.Lifetime);
+                });
         }
     }
 }
