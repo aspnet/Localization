@@ -10,6 +10,7 @@ using Microsoft.AspNet.Http.Features;
 using Microsoft.AspNet.Localization;
 using Microsoft.AspNet.TestHost;
 using Xunit;
+using System;
 
 namespace Microsoft.Extensions.Localization.Tests
 {
@@ -23,7 +24,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -58,7 +59,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                     });
                     app.Run(context =>
                     {
@@ -85,7 +86,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -119,7 +120,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -153,7 +154,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -188,7 +189,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -223,7 +224,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar-SA")
@@ -262,7 +263,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("FR")

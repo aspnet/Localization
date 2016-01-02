@@ -25,7 +25,7 @@ namespace LocalizationSample
         {
             app.UseRequestLocalization(options =>
             {
-                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
 
                 // Set options here to change middleware behavior
                 options.SupportedCultures = new List<CultureInfo>

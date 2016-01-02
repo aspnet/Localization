@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 {
                     app.UseRequestLocalization(options =>
                     {
-                        options.DefaultRequestCulture = new RequestCulture("en-US");
+                        options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                         options.SupportedCultures = new List<CultureInfo>
                         {
                             new CultureInfo("ar")

@@ -73,6 +73,7 @@ namespace Microsoft.AspNet.Localization
 
                         CultureInfo cultureInfo = null;
                         CultureInfo uiCultureInfo = null;
+						TimeZoneInfo timeZoneInfo = null;
                         if (_options.SupportedCultures != null)
                         {
                             cultureInfo = GetCultureInfo(
@@ -104,7 +105,7 @@ namespace Microsoft.AspNet.Localization
                             uiCultureInfo = _options.DefaultRequestCulture.UICulture;
                         }
 
-                        var result = new RequestCulture(cultureInfo, uiCultureInfo);
+                        var result = new RequestCulture(cultureInfo, uiCultureInfo, timeZoneInfo);
 
                         if (result != null)
                         {
