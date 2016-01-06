@@ -10,6 +10,7 @@ using Microsoft.AspNet.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace LocalizationWebsite
 {
@@ -31,7 +32,7 @@ namespace LocalizationWebsite
 
             app.UseRequestLocalization(options =>
             {
-                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.DefaultRequestCulture = new RequestCulture("en-US", TimeZoneInfo.Local.Id);
                 options.SupportedCultures = new List<CultureInfo>()
                 {
                     new CultureInfo("fr-FR")

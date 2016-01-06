@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.Localization
     public class RequestLocalizationOptions
     {
         private RequestCulture _defaultRequestCulture =
-            new RequestCulture(CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+            new RequestCulture(CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture, TimeZoneInfo.Local);
 
         /// <summary>
         /// Creates a new <see cref="RequestLocalizationOptions"/> with default values.
