@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Server.Testing;
 using Microsoft.AspNet.Testing.xunit;
@@ -10,6 +11,8 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
 {
     public class LocalizationTest
     {
+        /*private static readonly string _applicationPath = Path.GetFullPath(Path.Combine("..", "LocalizationWebsite"));
+        
         [ConditionalTheory]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
@@ -20,7 +23,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
             string applicationBaseUrl,
             RuntimeArchitecture runtimeArchitechture)
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 runtimeFlavor,
                 runtimeArchitechture,
@@ -40,7 +43,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
             string applicationBaseUrl,
             RuntimeArchitecture runtimeArchitechture)
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 runtimeFlavor,
                 runtimeArchitechture,
@@ -60,7 +63,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
             string applicationBaseUrl,
             RuntimeArchitecture runtimeArchitechture)
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 runtimeFlavor,
                 runtimeArchitechture,
@@ -75,7 +78,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.CoreCLR)]
         public Task Localization_ResourcesInFolder_ReturnLocalizedValue_Mono()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.Mono,
                 RuntimeArchitecture.x86,
@@ -90,7 +93,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.CoreCLR)]
         public Task Localization_ResourcesInFolder_ReturnLocalizedValue_WithCultureFallback_Mono()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.Mono,
                 RuntimeArchitecture.x86,
@@ -105,7 +108,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public Task Localization_ResourcesInFolder_ReturnLocalizedValue_CoreCLR_NonWindows()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.CoreClr,
                 RuntimeArchitecture.x64,
@@ -120,7 +123,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public Task Localization_ResourcesInFolder_ReturnLocalizedValue_WithCultureFallback_CoreCLR_NonWindows()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.CoreClr,
                 RuntimeArchitecture.x64,
@@ -140,7 +143,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
             string applicationBaseUrl,
             RuntimeArchitecture runtimeArchitechture)
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 runtimeFlavor,
                 runtimeArchitechture,
@@ -155,7 +158,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.CoreCLR)]
         public Task Localization_ResourcesAtRootFolder_ReturnLocalizedValue_Mono()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.Mono,
                 RuntimeArchitecture.x86,
@@ -170,7 +173,7 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
         [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public Task Localization_ResourcesAtRootFolder_ReturnLocalizedValue_CoreCLR_NonWindows()
         {
-            var testRunner = new TestRunner();
+            var testRunner = new TestRunner(_applicationPath);
             return testRunner.RunTestAndVerifyResponse(
                 RuntimeFlavor.CoreClr,
                 RuntimeArchitecture.x64,
@@ -178,6 +181,6 @@ namespace Microsoft.AspNet.Localization.FunctionalTests
                 "ResourcesAtRootFolder",
                 "fr-FR",
                 "Bonjour from StartupResourcesAtRootFolder Bonjour from Test in root folder Bonjour from Customer in Models folder");
-        }
+        }*/
     }
 }
