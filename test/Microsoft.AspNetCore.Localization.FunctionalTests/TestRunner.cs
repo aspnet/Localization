@@ -23,8 +23,8 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
             string expectedText)
         {
             var logger = new LoggerFactory()
-                            .AddConsole()
-                            .CreateLogger(string.Format("Localization Test Site:{0}:{1}:{2}", ServerType.Kestrel, runtimeFlavor, runtimeArchitechture));
+                .AddConsole()
+                .CreateLogger(string.Format("Localization Test Site:{0}:{1}:{2}", ServerType.Kestrel, runtimeFlavor, runtimeArchitechture));
 
             using (logger.BeginScope("LocalizationTest"))
             {
@@ -63,7 +63,18 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
 
         public string GetApplicationPath()
         {
-            return Path.GetFullPath(Path.Combine("..", "LocalizationWebsite"));
+            var path = Path.GetFullPath(Path.Combine("..", "LocalizationWebsite"));
+            if (Directory.Exists(path))
+            {
+                return path;
+            }
+
+            // Microsoft.AspNet.Localization.FunctionalTests/.testPublish/../../LocalizationWebiste
+            return Path.GetFullPath(Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "..",
+                "..",
+                "LocalizationWebsite"));
         }
     }
 }

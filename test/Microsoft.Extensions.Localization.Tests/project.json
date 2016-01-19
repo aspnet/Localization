@@ -6,19 +6,25 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Microsoft.Extensions.Localization": "1.0.0-*",
-    "xunit": "2.1.0-*",
-    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+    "xunit": "2.1.0"
   },
+  "testRunner": "xunit",
   "frameworks": {
     "dnx451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "",
+        "System.Threading.Tasks": ""
+      },
       "dependencies": {
-        "Moq": "4.2.1312.1622"
+        "Moq": "4.2.1312.1622",
+        "xunit.runner.console": "2.1.0"
       }
     },
     "dnxcore50": {
       "dependencies": {
         "moq.netcore": "4.4.0-beta8",
-        "System.Resources.Writer": "4.0.0-*"
+        "System.Resources.Writer": "4.0.0-*",
+        "xunit.runner.aspnet": "2.0.0-aspnet-*"
       }
     }
   },
