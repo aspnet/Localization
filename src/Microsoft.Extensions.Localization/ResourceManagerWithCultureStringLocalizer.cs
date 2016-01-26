@@ -94,7 +94,7 @@ namespace Microsoft.Extensions.Localization
         }
 
         /// <inheritdoc />
-        public override IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures) =>
-            GetAllStrings(includeAncestorCultures, _culture);
+        public override IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+            GetAllStrings(includeParentCultures, _culture);
     }
 }

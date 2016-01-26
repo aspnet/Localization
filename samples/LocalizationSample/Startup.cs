@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Localization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -22,8 +22,10 @@ namespace LocalizationSample
 
         public void Configure(IApplicationBuilder app, IStringLocalizer<Startup> SR)
         {
-            var options = new RequestLocalizationOptions
+            app.UseRequestLocalization(new RequestLocalizationOptions
             {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+
                 // Set options here to change middleware behavior
                 SupportedCultures = new List<CultureInfo>
                 {
@@ -49,16 +51,14 @@ namespace LocalizationSample
                     new CultureInfo("zh-CN"),
                     new CultureInfo("zh-CHT")
                 }
-            };
 
-            // Optionally create an app-specific provider with just a delegate, e.g. look up user preference from DB.
-            // Inserting it as position 0 ensures it has priority over any of the default providers.
-            //options.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(async context =>
-            //{
-                
-            //}));
+                // Optionally create an app-specific provider with just a delegate, e.g. look up user preference from DB.
+                // Inserting it as position 0 ensures it has priority over any of the default providers.
+                //RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(async context =>
+                //{
 
-            app.UseRequestLocalization(options, defaultRequestCulture: new RequestCulture("en-US"));
+                //}))
+            });
 
             app.Use(async (context, next) =>
             {
@@ -159,6 +159,17 @@ $@"<!doctype html>
 #endif
             await context.Response.WriteAsync($"    <option value=\"en-NOTREAL\">English (Not a real locale)</option>");
             await context.Response.WriteAsync($"    <option value=\"pp-NOTREAL\">Made-up (Not a real anything)</option>");
+        }
+
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseDefaultConfiguration(args)
+                .UseIISPlatformHandlerUrl()
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
         }
     }
 }

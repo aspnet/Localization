@@ -16,11 +16,10 @@ namespace Microsoft.Extensions.Localization
     /// An <see cref="IStringLocalizer"/> that uses the <see cref="System.Resources.ResourceManager"/> and
     /// <see cref="System.Resources.ResourceReader"/> to provide localized strings.
     /// </summary>
+    /// <remarks>This type is thread-safe.</remarks>
     public class ResourceManagerStringLocalizer : IStringLocalizer
     {
-        private readonly ConcurrentDictionary<string, object> _missingManifestCache =
-            new ConcurrentDictionary<string, object>();
-
+        private readonly ConcurrentDictionary<string, object> _missingManifestCache = new ConcurrentDictionary<string, object>();
         private readonly IResourceNamesCache _resourceNamesCache;
         private readonly ResourceManager _resourceManager;
         private readonly AssemblyWrapper _resourceAssemblyWrapper;
@@ -140,25 +139,32 @@ namespace Microsoft.Extensions.Localization
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures) =>
-            GetAllStrings(includeAncestorCultures, CultureInfo.CurrentUICulture);
+        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+            GetAllStrings(includeParentCultures, CultureInfo.CurrentUICulture);
 
         /// <summary>
         /// Returns all strings in the specified culture.
         /// </summary>
-        /// <param name="includeAncestorCultures"></param>
+        /// <param name="includeParentCultures"></param>
         /// <param name="culture">The <see cref="CultureInfo"/> to get strings for.</param>
         /// <returns>The strings.</returns>
-        protected IEnumerable<LocalizedString> GetAllStrings(bool includeAncestorCultures, CultureInfo culture)
+        protected IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures, CultureInfo culture)
         {
             if (culture == null)
             {
                 throw new ArgumentNullException(nameof(culture));
             }
 
-            var resourceNames = includeAncestorCultures
+            var resourceNames = includeParentCultures
                 ? GetResourceNamesFromCultureHierarchy(culture)
                 : GetResourceNamesForCulture(culture);
+
+            if (resourceNames == null && !includeParentCultures)
+            {
+                var resourceStreamName = GetResourceStreamName(culture);
+                throw new MissingManifestResourceException(
+                    Resources.FormatLocalization_MissingManifest(resourceStreamName));
+            }
 
             foreach (var name in resourceNames)
             {
@@ -224,17 +230,21 @@ namespace Microsoft.Extensions.Localization
             var currentCulture = startingCulture;
             var resourceNames = new HashSet<string>();
 
+            var hasAnyCultures = false;
+
             while (true)
             {
-                try
+
+                var cultureResourceNames = GetResourceNamesForCulture(currentCulture);
+
+                if (cultureResourceNames != null)
                 {
-                    var cultureResourceNames = GetResourceNamesForCulture(currentCulture);
                     foreach (var resourceName in cultureResourceNames)
                     {
                         resourceNames.Add(resourceName);
                     }
+                    hasAnyCultures = true;
                 }
-                catch (MissingManifestResourceException) { }
 
                 if (currentCulture == currentCulture.Parent)
                 {
@@ -245,10 +255,15 @@ namespace Microsoft.Extensions.Localization
                 currentCulture = currentCulture.Parent;
             }
 
+            if (!hasAnyCultures)
+            {
+                throw new MissingManifestResourceException(Resources.Localization_MissingManifest_Parent);
+            }
+
             return resourceNames;
         }
 
-        private IList<string> GetResourceNamesForCulture(CultureInfo culture)
+        private string GetResourceStreamName(CultureInfo culture)
         {
             var resourceStreamName = _resourceBaseName;
             if (!string.IsNullOrEmpty(culture.Name))
@@ -257,22 +272,36 @@ namespace Microsoft.Extensions.Localization
             }
             resourceStreamName += ".resources";
 
+            return resourceStreamName;
+        }
+
+        private IList<string> GetResourceNamesForCulture(CultureInfo culture)
+        {
+            var resourceStreamName = GetResourceStreamName(culture);
+
             var cacheKey = $"assembly={_resourceAssemblyWrapper.FullName};resourceStreamName={resourceStreamName}";
 
             var cultureResourceNames = _resourceNamesCache.GetOrAdd(cacheKey, _ =>
             {
-                var names = new List<string>();
                 using (var cultureResourceStream = _resourceAssemblyWrapper.GetManifestResourceStream(resourceStreamName))
-                using (var resources = new ResourceReader(cultureResourceStream))
                 {
-                    foreach (DictionaryEntry entry in resources)
+                    if (cultureResourceStream == null)
                     {
-                        var resourceName = (string)entry.Key;
-                        names.Add(resourceName);
+                        return null;
+                    }
+
+                    using (var resources = new ResourceReader(cultureResourceStream))
+                    {
+                        var names = new List<string>();
+                        foreach (DictionaryEntry entry in resources)
+                        {
+                            var resourceName = (string)entry.Key;
+                            names.Add(resourceName);
+                        }
+                        return names;
                     }
                 }
 
-                return names;
             });
 
             return cultureResourceNames;

@@ -3,7 +3,7 @@
 
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Microsoft.Extensions.Localization.Test
@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.Localization.Test
 
             // Assert
             var services = collection.ToList();
-            Assert.Equal(3, services.Count);
+            Assert.Equal(2, services.Count);
 
             Assert.Equal(typeof(IStringLocalizerFactory), services[0].ServiceType);
             Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), services[0].ImplementationType);
@@ -30,9 +30,6 @@ namespace Microsoft.Extensions.Localization.Test
             Assert.Equal(typeof(IStringLocalizer<>), services[1].ServiceType);
             Assert.Equal(typeof(StringLocalizer<>), services[1].ImplementationType);
             Assert.Equal(ServiceLifetime.Transient, services[1].Lifetime);
-
-            Assert.Equal(typeof(IOptions<>), services[2].ServiceType);
-            Assert.Equal(ServiceLifetime.Singleton, services[2].Lifetime);
         }
 
         [Fact]
@@ -46,7 +43,7 @@ namespace Microsoft.Extensions.Localization.Test
 
             // Assert
             var services = collection.ToList();
-            Assert.Equal(4, services.Count);
+            Assert.Equal(3, services.Count);
 
             Assert.Equal(typeof(IStringLocalizerFactory), services[0].ServiceType);
             Assert.Equal(typeof(ResourceManagerStringLocalizerFactory), services[0].ImplementationType);
@@ -58,9 +55,6 @@ namespace Microsoft.Extensions.Localization.Test
 
             Assert.Equal(typeof(IConfigureOptions<LocalizationOptions>), services[2].ServiceType);
             Assert.Equal(ServiceLifetime.Singleton, services[2].Lifetime);
-
-            Assert.Equal(typeof(IOptions<>), services[3].ServiceType);
-            Assert.Equal(ServiceLifetime.Singleton, services[3].Lifetime);
         }
     }
 }
