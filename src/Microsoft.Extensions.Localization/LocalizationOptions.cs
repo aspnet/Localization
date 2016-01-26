@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.Localization
         public string ResourcesPath { get; set; } = string.Empty;
 
         /// <summary>
-        /// The behavior to apply when a given resource key appears to be missing
+        /// The lookup behavior to use when a given resource key is not found.
         /// </summary>
         public ResourceLookupBehavior ResourceLookupBehavior { get; set; } = ResourceLookupBehavior.UseNameIfNotFound;
     }

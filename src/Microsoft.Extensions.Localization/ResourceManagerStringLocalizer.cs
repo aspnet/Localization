@@ -175,21 +175,15 @@ namespace Microsoft.Extensions.Localization
 
         private string ApplyResourceLookupBehavior(string name, string value)
         {
-            switch(_resourceLookupBehavior)
-            {
-                case ResourceLookupBehavior.ThrowIfNotFound:
-                    if(value == null)
-                    {
-                        throw new ArgumentOutOfRangeException(
-                            nameof(name),
-                            name,
-                            "The name of the string resource is missing from the resource source.");
-                    }
-                    return value;
-                case ResourceLookupBehavior.UseNameIfNotFound:
-                default:
-                    return name ?? value;
-            }
+			if(_resourceLookupBehavior == ResourceLookupBehavior.ThrowIfNotFound)
+			{
+				if(value == null)
+				{
+					throw new LocalizedStringNotFoundException(Resources.LocalizedStringNotFound);
+				}				
+			}
+			
+			return name ?? value;
         }
 
         /// <summary>

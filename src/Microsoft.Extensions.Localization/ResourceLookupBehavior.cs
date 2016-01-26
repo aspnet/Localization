@@ -4,16 +4,17 @@
 namespace Microsoft.Extensions.Localization
 {
     /// <summary>
-    /// Behaviors to be used when a resource key appears to be missing
+    /// Defines the lookup behavior to use when a given resource key is not found.
     /// </summary>
     public enum ResourceLookupBehavior
     {
         /// <summary>
-        /// Use the resource key as a fallback
+        /// Use the resource key as the string if a localized string is not found.
         /// </summary>
         UseNameIfNotFound,
+		
         /// <summary>
-        /// An exception is thrown to the caller
+        /// Throw an exception if a localized string is not found
         /// </summary>
         ThrowIfNotFound
     }

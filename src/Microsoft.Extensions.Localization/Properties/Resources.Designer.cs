@@ -11,6 +11,22 @@ namespace Microsoft.Extensions.Localization
             = new ResourceManager("Microsoft.Extensions.Localization.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
+        /// he name of the string resource is missing from the resource source.
+        /// </summary>
+        internal static string LocalizedStringNotFound
+        {
+            get { return GetString("LocalizedStringNotFound"); }
+        }
+
+        /// <summary>
+        /// he name of the string resource is missing from the resource source.
+        /// </summary>
+        internal static string FormatLocalizedStringNotFound()
+        {
+            return GetString("LocalizedStringNotFound");
+        }
+			
+        /// <summary>
         /// The manifest '{0}' was not found.
         /// </summary>
         internal static string Localization_MissingManifest

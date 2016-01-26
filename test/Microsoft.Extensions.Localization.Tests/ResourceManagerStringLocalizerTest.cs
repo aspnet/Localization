@@ -1,14 +1,14 @@
 // Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.Extensions.Localization.Internal;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
-using Microsoft.Extensions.Localization.Internal;
 using Xunit;
-using System;
 
 namespace Microsoft.Extensions.Localization.Tests
 {
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.Localization.Tests
         }
 
         [Fact]
-        public void ResourceLookupBehaviorUseNameIfNotFound()
+        public void ReturnsNameForMissingStringWhenResourceLookupBehaviorIsUseNameIfNotFound()
         {
             // Arrange
             var resourceNamesCache = new ResourceNamesCache();
@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.Localization.Tests
         }
 
         [Fact]
-        public void ResourceLookupBehaviorThrowIfNotFound()
+        public void ThrowsForMissingStringWhenResourceLookupBehaviorIsThrowIfNotFound()
         {
             // Arrange
             var resourceNamesCache = new ResourceNamesCache();
@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.Localization.Tests
             var localizer = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, ResourceLookupBehavior.ThrowIfNotFound);
 
             // Ac & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => localizer["test"]);
+            Assert.Throws<LocalizedStringNotFoundException>(() => localizer["test"]);
         }
 
         [Theory]
@@ -101,7 +101,7 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceNamesCache = new ResourceNamesCache();
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
-            var localizer = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache);
+            var localizer = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, ResourceLookupBehavior.UseNameIfNotFound);
 
             // Act
             // We have to access the result so it evaluates.
@@ -127,6 +127,7 @@ namespace Microsoft.Extensions.Localization.Tests
                 resourceAssembly.Assembly,
                 baseName,
                 resourceNamesCache,
+				ResourceLookupBehavior.UseNameIfNotFound,
                 CultureInfo.CurrentCulture);
 
             // Act & Assert
