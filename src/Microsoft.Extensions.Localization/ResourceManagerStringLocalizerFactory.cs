@@ -2,11 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
 using System.Resources;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.Extensions.OptionsModel;
 
 namespace Microsoft.Extensions.Localization
 {
@@ -16,9 +17,9 @@ namespace Microsoft.Extensions.Localization
     public class ResourceManagerStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly IResourceNamesCache _resourceNamesCache = new ResourceNamesCache();
-
+        private readonly ConcurrentDictionary<string, ResourceManagerStringLocalizer> _localizerCache =
+            new ConcurrentDictionary<string, ResourceManagerStringLocalizer>();
         private readonly IApplicationEnvironment _applicationEnvironment;
-
         private readonly string _resourcesRelativePath;
 
         private readonly ResourceLookupBehavior _resourceLookupBehavior;
@@ -68,14 +69,20 @@ namespace Microsoft.Extensions.Localization
             var typeInfo = resourceSource.GetTypeInfo();
             var assembly = typeInfo.Assembly;
 
-            var baseName = _applicationEnvironment.ApplicationName + "." + _resourcesRelativePath + typeInfo.FullName;
+            // Re-root the base name if a resources path is set
+            var baseName = string.IsNullOrEmpty(_resourcesRelativePath)
+                ? typeInfo.FullName
+                : _applicationEnvironment.ApplicationName + "." + _resourcesRelativePath
+                    + TrimPrefix(typeInfo.FullName, _applicationEnvironment.ApplicationName + ".");
 
-            return new ResourceManagerStringLocalizer(
-                new ResourceManager(baseName, assembly),
-                assembly,
-                baseName,
-                _resourceNamesCache,
-                _resourceLookupBehavior);
+            return _localizerCache.GetOrAdd(baseName, _ =>
+                new ResourceManagerStringLocalizer(
+                    new ResourceManager(baseName, assembly),
+                    assembly,
+                    baseName,
+                    _resourceNamesCache,
+					_resourceLookupBehavior)
+            );
         }
 
         /// <summary>
@@ -91,16 +98,30 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(baseName));
             }
 
-            var rootPath = location ?? _applicationEnvironment.ApplicationName;
-            var assembly = Assembly.Load(new AssemblyName(rootPath));
-            baseName = rootPath + "." + _resourcesRelativePath + baseName;
+            location = location ?? _applicationEnvironment.ApplicationName;
 
-            return new ResourceManagerStringLocalizer(
-                new ResourceManager(baseName, assembly),
-                assembly,
-                baseName,
-                _resourceNamesCache,
-                _resourceLookupBehavior);
+            baseName = location + "." + _resourcesRelativePath + TrimPrefix(baseName, location + ".");
+
+            return _localizerCache.GetOrAdd($"B={baseName},L={location}", _ =>
+            {
+                var assembly = Assembly.Load(new AssemblyName(location));
+                return new ResourceManagerStringLocalizer(
+                    new ResourceManager(baseName, assembly),
+                    assembly,
+                    baseName,
+                    _resourceNamesCache,
+					_resourceLookupBehavior);
+            });
+        }
+
+        private static string TrimPrefix(string name, string prefix)
+        {
+            if (name.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return name.Substring(prefix.Length);
+            }
+
+            return name;
         }
     }
 }

@@ -10,10 +10,15 @@
     "xunit.runner.aspnet": "2.0.0-aspnet-*"
   },
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "dependencies": {
+        "Moq": "4.2.1312.1622"
+      }
+    },
     "dnxcore50": {
       "dependencies": {
-        "System.Reflection": "4.1.0-beta-*"
+        "moq.netcore": "4.4.0-beta8",
+        "System.Resources.Writer": "4.0.0-*"
       }
     }
   },
