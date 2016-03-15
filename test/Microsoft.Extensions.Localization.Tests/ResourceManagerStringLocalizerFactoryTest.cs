@@ -1,15 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Moq;
-using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.Extensions.Options;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
+using Moq;
+using Xunit;
 
 namespace Microsoft.Extensions.Localization.Test
 {
@@ -19,7 +15,7 @@ namespace Microsoft.Extensions.Localization.Test
         public void Create_FromType_ReturnsCachedResultForSameType()
         {
             // Arrange
-            var appEnv = new Mock<IApplicationEnvironment>();
+            var appEnv = new Mock<IHostingEnvironment>();
             appEnv.SetupGet(a => a.ApplicationName).Returns("TestApplication");
             var locOptions = new LocalizationOptions();
             var options = new Mock<IOptions<LocalizationOptions>>();
@@ -38,7 +34,7 @@ namespace Microsoft.Extensions.Localization.Test
         public void Create_FromType_ReturnsNewResultForDifferentType()
         {
             // Arrange
-            var appEnv = new Mock<IApplicationEnvironment>();
+            var appEnv = new Mock<IHostingEnvironment>();
             appEnv.SetupGet(a => a.ApplicationName).Returns("TestApplication");
             var locOptions = new LocalizationOptions();
             var options = new Mock<IOptions<LocalizationOptions>>();
@@ -57,7 +53,7 @@ namespace Microsoft.Extensions.Localization.Test
         public void Create_FromNameLocation_ReturnsCachedResultForSameNameLocation()
         {
             // Arrange
-            var appEnv = new Mock<IApplicationEnvironment>();
+            var appEnv = new Mock<IHostingEnvironment>();
             appEnv.SetupGet(a => a.ApplicationName).Returns("TestApplication");
             var locOptions = new LocalizationOptions();
             var options = new Mock<IOptions<LocalizationOptions>>();
@@ -77,7 +73,7 @@ namespace Microsoft.Extensions.Localization.Test
         public void Create_FromNameLocation_ReturnsNewResultForDifferentName()
         {
             // Arrange
-            var appEnv = new Mock<IApplicationEnvironment>();
+            var appEnv = new Mock<IHostingEnvironment>();
             appEnv.SetupGet(a => a.ApplicationName).Returns("TestApplication");
             var locOptions = new LocalizationOptions();
             var options = new Mock<IOptions<LocalizationOptions>>();
@@ -97,7 +93,7 @@ namespace Microsoft.Extensions.Localization.Test
         public void Create_FromNameLocation_ReturnsNewResultForDifferentLocation()
         {
             // Arrange
-            var appEnv = new Mock<IApplicationEnvironment>();
+            var appEnv = new Mock<IHostingEnvironment>();
             appEnv.SetupGet(a => a.ApplicationName).Returns("TestApplication");
             var locOptions = new LocalizationOptions();
             var options = new Mock<IOptions<LocalizationOptions>>();
