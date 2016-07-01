@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Extensions.Localization.Internal;
@@ -249,15 +251,54 @@ namespace Microsoft.Extensions.Localization
             return resourceStreamName;
         }
 
+        private const string AssemblyElementDelimiter = ", ";
+
+        private string ApplyCultureToAssembly(string assemblyFullName, CultureInfo culture)
+        {
+            var assemblyNameElements = _resourceAssemblyWrapper.FullName
+                .Split(new string[] { AssemblyElementDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+            IDictionary<string, string> dict = new Dictionary<string, string>();
+
+            foreach (var assemblyNameElement in assemblyNameElements)
+            {
+                var parts = assemblyNameElement.Split(new char[] { '=' });
+
+                if (parts.Count() == 1)
+                {
+                    parts[0] = parts[0] + ".resources";
+                }
+
+                dict.Add(parts[0], parts.Count() == 2 ? parts[1] : null);
+            }
+
+            // Overwrite any existing culture
+            dict["Culture"] = culture.Name == string.Empty ? "neutral" : culture.Name;
+
+            var elements = dict.Select(kvp => kvp.Value == null ? kvp.Key : $"{kvp.Key}={kvp.Value}");
+
+            return string.Join(AssemblyElementDelimiter, elements);
+        }
+
         private IList<string> GetResourceNamesForCulture(CultureInfo culture)
         {
-            var resourceStreamName = GetResourceStreamName(culture);
+            var assemblyName = ApplyCultureToAssembly(_resourceAssemblyWrapper.FullName, culture);
 
+            Assembly assembly;
+            try
+            {
+                assembly = Assembly.Load(new AssemblyName(assemblyName));
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+
+            var resourceStreamName = GetResourceStreamName(culture);
             var cacheKey = $"assembly={_resourceAssemblyWrapper.FullName};resourceStreamName={resourceStreamName}";
 
-            var cultureResourceNames = _resourceNamesCache.GetOrAdd(cacheKey, _ =>
+            return _resourceNamesCache.GetOrAdd(cacheKey, _ =>
             {
-                using (var cultureResourceStream = _resourceAssemblyWrapper.GetManifestResourceStream(resourceStreamName))
+                using (var cultureResourceStream = assembly.GetManifestResourceStream(resourceStreamName))
                 {
                     if (cultureResourceStream == null)
                     {
@@ -275,10 +316,7 @@ namespace Microsoft.Extensions.Localization
                         return names;
                     }
                 }
-
             });
-
-            return cultureResourceNames;
         }
     }
 }
