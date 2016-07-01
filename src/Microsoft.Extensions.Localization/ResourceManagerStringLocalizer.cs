@@ -255,7 +255,7 @@ namespace Microsoft.Extensions.Localization
 
         private string ApplyCultureToAssembly(string assemblyFullName, CultureInfo culture)
         {
-            var assemblyNameElements = _resourceAssemblyWrapper.FullName
+            var assemblyNameElements = assemblyFullName
                 .Split(new string[] { AssemblyElementDelimiter }, StringSplitOptions.RemoveEmptyEntries);
             IDictionary<string, string> dict = new Dictionary<string, string>();
 
