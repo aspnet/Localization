@@ -30,8 +30,9 @@ namespace Microsoft.Extensions.Localization
             Assembly resourceAssembly,
             string baseName,
             IResourceNamesCache resourceNamesCache,
+            ResourceLookupBehavior resourceLookupBehavior,
             CultureInfo culture)
-            : base(resourceManager, resourceAssembly, baseName, resourceNamesCache)
+            : base(resourceManager, resourceAssembly, baseName, resourceNamesCache, resourceLookupBehavior)
         {
             if (resourceManager == null)
             {
@@ -72,7 +73,7 @@ namespace Microsoft.Extensions.Localization
                 }
 
                 var value = GetStringSafely(name, _culture);
-                return new LocalizedString(name, value ?? name);
+                return new LocalizedString(name, value);
             }
         }
 
@@ -88,7 +89,7 @@ namespace Microsoft.Extensions.Localization
 
                 var format = GetStringSafely(name, _culture);
                 var value = string.Format(_culture, format ?? name, arguments);
-                return new LocalizedString(name, value ?? name, resourceNotFound: format == null);
+                return new LocalizedString(name, value, resourceNotFound: format == null);
             }
         }
 

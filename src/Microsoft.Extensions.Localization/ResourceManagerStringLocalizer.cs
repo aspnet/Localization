@@ -24,6 +24,7 @@ namespace Microsoft.Extensions.Localization
         private readonly ResourceManager _resourceManager;
         private readonly AssemblyWrapper _resourceAssemblyWrapper;
         private readonly string _resourceBaseName;
+        private readonly ResourceLookupBehavior _resourceLookupBehavior;
 
         /// <summary>
         /// Creates a new <see cref="ResourceManagerStringLocalizer"/>.
@@ -36,8 +37,9 @@ namespace Microsoft.Extensions.Localization
             ResourceManager resourceManager,
             Assembly resourceAssembly,
             string baseName,
-            IResourceNamesCache resourceNamesCache)
-            : this(resourceManager, new AssemblyWrapper(resourceAssembly), baseName, resourceNamesCache)
+            IResourceNamesCache resourceNamesCache,
+            ResourceLookupBehavior resourceLookupBehavior)
+            : this(resourceManager, new AssemblyWrapper(resourceAssembly), baseName, resourceNamesCache, resourceLookupBehavior)
         {
             if (resourceAssembly == null)
             {
@@ -52,7 +54,8 @@ namespace Microsoft.Extensions.Localization
             ResourceManager resourceManager,
             AssemblyWrapper resourceAssemblyWrapper,
             string baseName,
-            IResourceNamesCache resourceNamesCache)
+            IResourceNamesCache resourceNamesCache,
+            ResourceLookupBehavior resourceLookupBehavior)
         {
             if (resourceManager == null)
             {
@@ -78,6 +81,7 @@ namespace Microsoft.Extensions.Localization
             _resourceManager = resourceManager;
             _resourceBaseName = baseName;
             _resourceNamesCache = resourceNamesCache;
+            _resourceLookupBehavior = resourceLookupBehavior;
         }
 
         /// <inheritdoc />
@@ -91,7 +95,7 @@ namespace Microsoft.Extensions.Localization
                 }
 
                 var value = GetStringSafely(name, null);
-                return new LocalizedString(name, value ?? name, resourceNotFound: value == null);
+                return new LocalizedString(name, value, resourceNotFound: value == null);
             }
         }
 
@@ -106,7 +110,7 @@ namespace Microsoft.Extensions.Localization
                 }
 
                 var format = GetStringSafely(name, null);
-                var value = string.Format(format ?? name, arguments);
+                var value = string.Format(format, arguments);
                 return new LocalizedString(name, value, resourceNotFound: format == null);
             }
         }
@@ -123,12 +127,14 @@ namespace Microsoft.Extensions.Localization
                     _resourceManager,
                     _resourceAssemblyWrapper.Assembly,
                     _resourceBaseName,
-                    _resourceNamesCache)
+                    _resourceNamesCache,
+                    _resourceLookupBehavior)
                 : new ResourceManagerWithCultureStringLocalizer(
                     _resourceManager,
                     _resourceAssemblyWrapper.Assembly,
                     _resourceBaseName,
                     _resourceNamesCache,
+                    _resourceLookupBehavior,
                     culture);
         }
 
@@ -163,8 +169,21 @@ namespace Microsoft.Extensions.Localization
             foreach (var name in resourceNames)
             {
                 var value = GetStringSafely(name, culture);
-                yield return new LocalizedString(name, value ?? name, resourceNotFound: value == null);
+                yield return new LocalizedString(name, value, resourceNotFound: value == null);
             }
+        }
+
+        private string ApplyResourceLookupBehavior(string name, string value)
+        {
+			if(_resourceLookupBehavior == ResourceLookupBehavior.ThrowIfNotFound)
+			{
+				if(value == null)
+				{
+					throw new LocalizedStringNotFoundException(Resources.LocalizedStringNotFound);
+				}				
+			}
+			
+			return name ?? value;
         }
 
         /// <summary>
@@ -185,17 +204,18 @@ namespace Microsoft.Extensions.Localization
 
             if (_missingManifestCache.ContainsKey(cacheKey))
             {
-                return null;
+                return ApplyResourceLookupBehavior(name, null);
             }
 
             try
             {
-                return culture == null ? _resourceManager.GetString(name) : _resourceManager.GetString(name, culture);
+                var value = culture == null ? _resourceManager.GetString(name) : _resourceManager.GetString(name, culture);
+                return ApplyResourceLookupBehavior(name, value);
             }
             catch (MissingManifestResourceException)
             {
                 _missingManifestCache.TryAdd(cacheKey, null);
-                return null;
+                return ApplyResourceLookupBehavior(name, null);
             }
         }
 
