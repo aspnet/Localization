@@ -96,7 +96,10 @@ namespace Microsoft.Extensions.Localization
 
             location = location ?? _hostingEnvironment.ApplicationName;
 
-            baseName = location + "." + _resourcesRelativePath + TrimPrefix(baseName, location + ".");
+            var locationPath = location == _hostingEnvironment.ApplicationName ?
+                location + "." + _resourcesRelativePath :
+                location + ".";
+            baseName = locationPath + TrimPrefix(baseName, location + ".");
 
             return _localizerCache.GetOrAdd($"B={baseName},L={location}", _ =>
             {

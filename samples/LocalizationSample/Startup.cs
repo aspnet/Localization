@@ -21,7 +21,10 @@ namespace LocalizationSample
             services.AddLocalization(options => options.ResourcesPath = "My/Resources");
         }
 
-        public void Configure(IApplicationBuilder app, IStringLocalizer<Startup> SR)
+        public void Configure(
+            IApplicationBuilder app,
+            IStringLocalizer<Startup> SR,
+            IStringLocalizerFactory localizerFactory)
         {
             var supportedCultures = new List<CultureInfo>
             {
@@ -37,7 +40,8 @@ namespace LocalizationSample
 #if !NETCOREAPP1_0
             supportedCultures.Add(new CultureInfo("zh-CHT"));
 #endif
-            var options = new RequestLocalizationOptions {
+            var options = new RequestLocalizationOptions
+            {
                 DefaultRequestCulture = new RequestCulture("en-US"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
@@ -48,6 +52,8 @@ namespace LocalizationSample
             //{
 
             //}));
+
+            var libLocalizer = localizerFactory.Create("Controllers.FooController", "LocalizeLib");
 
             app.UseRequestLocalization(options);
 
@@ -93,6 +99,7 @@ $@"<!doctype html>
 <body>");
                 await context.Response.WriteAsync($"<h1>{SR["Request Localization Sample"]}</h1>");
                 await context.Response.WriteAsync($"<h1>{SR["Hello"]}</h1>");
+                await context.Response.WriteAsync($"<h1>LIB: {libLocalizer["Hello"]}</h1>");
                 await context.Response.WriteAsync("<form id=\"theForm\" method=\"get\">");
                 await context.Response.WriteAsync($"<label for=\"culture\">{SR["Culture"]}: </label>");
                 await context.Response.WriteAsync("<select id=\"culture\" name=\"culture\">");
