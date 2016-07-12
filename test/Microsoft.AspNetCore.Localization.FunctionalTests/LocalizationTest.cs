@@ -230,9 +230,8 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 string.Join(
                     " ",
                     FrenchStartupResourcesAtRoot,
-                    FrenchResourcesFolder,
-                    FrenchCustomerResourcesFolder,
-                    FrenchClassLib));
+                    FrenchRootFolder,
+                    FrenchCustomerModelsFolder));
         }
     }
 }
