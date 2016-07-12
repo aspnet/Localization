@@ -229,7 +229,7 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "fr-FR",
                 string.Join(
                     " ",
-                    FrenchStartupResourcesInFolder,
+                    FrenchStartupResourcesAtRoot,
                     FrenchResourcesFolder,
                     FrenchCustomerResourcesFolder,
                     FrenchClassLib));
