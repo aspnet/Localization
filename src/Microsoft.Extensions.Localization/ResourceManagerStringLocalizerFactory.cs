@@ -66,11 +66,23 @@ namespace Microsoft.Extensions.Localization
             var typeInfo = resourceSource.GetTypeInfo();
             var assembly = typeInfo.Assembly;
 
-            // Re-root the base name if a resources path is set
-            var baseName = string.IsNullOrEmpty(_resourcesRelativePath)
-                ? typeInfo.FullName
-                : _hostingEnvironment.ApplicationName + "." + _resourcesRelativePath
-                    + TrimPrefix(typeInfo.FullName, _hostingEnvironment.ApplicationName + ".");
+            string baseName;
+
+            if (_hostingEnvironment.ApplicationName == null)
+            {
+                var assemblyName = assembly.GetName().Name + ".";
+                //We're working in a library
+                baseName = assemblyName + _resourcesRelativePath + TrimPrefix(typeInfo.FullName, assemblyName);
+            }
+            else
+            {
+                //Inside the main assembly
+                // Re-root the base name if a resources path is set
+                baseName = string.IsNullOrEmpty(_resourcesRelativePath)
+                    ? typeInfo.FullName
+                    : _hostingEnvironment.ApplicationName + "." + _resourcesRelativePath
+                        + TrimPrefix(typeInfo.FullName, _hostingEnvironment.ApplicationName + ".");
+            }
 
             return _localizerCache.GetOrAdd(baseName, _ =>
                 new ResourceManagerStringLocalizer(
@@ -96,7 +108,10 @@ namespace Microsoft.Extensions.Localization
 
             location = location ?? _hostingEnvironment.ApplicationName;
 
-            baseName = location + "." + _resourcesRelativePath + TrimPrefix(baseName, location + ".");
+            var locationPath = location == _hostingEnvironment.ApplicationName ?
+                location + "." + _resourcesRelativePath :
+                location + ".";
+            baseName = locationPath + TrimPrefix(baseName, location + ".");
 
             return _localizerCache.GetOrAdd($"B={baseName},L={location}", _ =>
             {

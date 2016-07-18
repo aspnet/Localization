@@ -25,8 +25,11 @@ namespace LocalizationWebsite
             ILoggerFactory loggerFactory,
             IStringLocalizerFactory stringLocalizerFactory,
             IStringLocalizer<StartupResourcesInFolder> startupStringLocalizer,
-            IStringLocalizer<Customer> custromerStringLocalizer)
+            IStringLocalizer<Customer> custromerStringLocalizer,
+            IStringLocalizerFactory localizerFactory)
         {
+            var classLibLocalizer = localizerFactory.Create("Controllers.FooController", "TestClassLibrary");
+
             loggerFactory.AddConsole(minLevel: LogLevel.Warning);
 
             app.UseRequestLocalization(new RequestLocalizationOptions
@@ -51,6 +54,8 @@ namespace LocalizationWebsite
                 await context.Response.WriteAsync(stringLocalizer["Hello"]);
                 await context.Response.WriteAsync(" ");
                 await context.Response.WriteAsync(custromerStringLocalizer["Hello"]);
+                await context.Response.WriteAsync(" ");
+                await context.Response.WriteAsync(classLibLocalizer["Hello"]);
             });
         }
     }

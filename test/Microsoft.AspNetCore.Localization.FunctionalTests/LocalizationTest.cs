@@ -12,7 +12,15 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
     public class LocalizationTest
     {
         private static readonly string _applicationPath = Path.Combine("test", "LocalizationWebsite");
-        
+
+        private const string FrenchStartupResourcesAtRoot = "Bonjour from StartupResourcesAtRootFolder";
+        private const string FrenchStartupResourcesInFolder = "Bonjour from StartupResourcesInFolder";
+        private const string FrenchResourcesFolder = "Bonjour from Test in resources folder";
+        private const string FrenchCustomerModelsFolder = "Bonjour from Customer in Models folder";
+        private const string FrenchCustomerResourcesFolder = "Bonjour from Customer in resources folder";
+        private const string FrenchClassLib = "TestClassLibraryFooController";
+        private const string FrenchRootFolder = "Bonjour from Test in root folder";
+
         [ConditionalTheory]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
@@ -30,7 +38,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 applicationBaseUrl,
                 "ResourcesInFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalTheory]
@@ -50,7 +63,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 applicationBaseUrl,
                 "ResourcesInFolder",
                 "fr-FR-test",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalTheory]
@@ -70,7 +88,7 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 applicationBaseUrl,
                 "ResourcesInFolder",
                 "fr-FR-test-again-too-deep-to-work",
-                "Hello Hello Hello");
+                "Hello Hello Hello " + FrenchClassLib);
         }
 
         [ConditionalFact]
@@ -85,7 +103,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5072",
                 "ResourcesInFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchStartupResourcesInFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalFact]
@@ -100,7 +123,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5072",
                 "ResourcesInFolder",
                 "fr-FR-test",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalFact]
@@ -115,7 +143,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5073/",
                 "ResourcesInFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalFact]
@@ -130,7 +163,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5073/",
                 "ResourcesInFolder",
                 "fr-FR-test",
-                "Bonjour from StartupResourcesInFolder Bonjour from Test in resources folder Bonjour from Customer in resources folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalTheory]
@@ -150,7 +188,11 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 applicationBaseUrl,
                 "ResourcesAtRootFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesAtRootFolder Bonjour from Test in root folder Bonjour from Customer in Models folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesAtRoot,
+                    FrenchRootFolder,
+                    FrenchCustomerModelsFolder));
         }
 
         [ConditionalFact]
@@ -165,7 +207,12 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5076",
                 "ResourcesAtRootFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesAtRootFolder Bonjour from Test in root folder Bonjour from Customer in Models folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesInFolder,
+                    FrenchResourcesFolder,
+                    FrenchCustomerResourcesFolder,
+                    FrenchClassLib));
         }
 
         [ConditionalFact]
@@ -180,7 +227,11 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "http://localhost:5077/",
                 "ResourcesAtRootFolder",
                 "fr-FR",
-                "Bonjour from StartupResourcesAtRootFolder Bonjour from Test in root folder Bonjour from Customer in Models folder");
+                string.Join(
+                    " ",
+                    FrenchStartupResourcesAtRoot,
+                    FrenchRootFolder,
+                    FrenchCustomerModelsFolder));
         }
     }
 }

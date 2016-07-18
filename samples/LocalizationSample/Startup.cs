@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using MyLibrary;
+using OtherNamespace;
+//using MyLibrary;
 
 namespace LocalizationSample
 {
@@ -37,7 +40,8 @@ namespace LocalizationSample
 #if !NETCOREAPP1_0
             supportedCultures.Add(new CultureInfo("zh-CHT"));
 #endif
-            var options = new RequestLocalizationOptions {
+            var options = new RequestLocalizationOptions
+            {
                 DefaultRequestCulture = new RequestCulture("en-US"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
@@ -91,6 +95,11 @@ $@"<!doctype html>
     </script>
 </head>
 <body>");
+                var classLib = new Class1();
+                var outsideLib = new OutsideNamespaceClass();
+
+                await context.Response.WriteAsync($"<h1>ClassLib {classLib.GetData()}</h1>");
+                await context.Response.WriteAsync($"<h1>OutsiteNamespace {outsideLib.GetData()}</h1>");
                 await context.Response.WriteAsync($"<h1>{SR["Request Localization Sample"]}</h1>");
                 await context.Response.WriteAsync($"<h1>{SR["Hello"]}</h1>");
                 await context.Response.WriteAsync("<form id=\"theForm\" method=\"get\">");

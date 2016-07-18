@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
 {
     public class LocalizationSampleTest
     {
-        private static readonly string _applicationPath =  Path.Combine("samples", "LocalizationSample");
+        private static readonly string _applicationPath = Path.Combine("samples", "LocalizationSample");
 
         [ConditionalTheory]
         [OSSkipCondition(OperatingSystems.Linux)]
