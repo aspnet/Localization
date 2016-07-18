@@ -5,7 +5,8 @@
     "Microsoft.AspNetCore.Localization": "1.1.0-*",
     "Microsoft.Extensions.Configuration.CommandLine": "1.1.0-*",
     "Microsoft.Extensions.Localization": "1.1.0-*",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0-*"
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0-*",
+    "MyLibrary": "1.0.0-*"
   },
   "buildOptions": {
     "emitEntryPoint": true
