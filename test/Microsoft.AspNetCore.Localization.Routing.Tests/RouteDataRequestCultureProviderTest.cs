@@ -3,15 +3,15 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using System.Net;
 
 namespace Microsoft.AspNetCore.Localization.Routing
 {

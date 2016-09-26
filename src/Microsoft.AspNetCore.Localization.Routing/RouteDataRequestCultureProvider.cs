@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Localization.Routing
 {
@@ -50,7 +51,7 @@ namespace Microsoft.AspNetCore.Localization.Routing
             if (culture == null && uiCulture == null)
             {
                 // No values specified for either so no match
-                return Task.FromResult((ProviderCultureResult)null);
+                return TaskCache<ProviderCultureResult>.DefaultCompletedTask;
             }
 
             if (culture != null && uiCulture == null)
