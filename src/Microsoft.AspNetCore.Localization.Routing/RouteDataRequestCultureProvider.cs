@@ -38,14 +38,14 @@ namespace Microsoft.AspNetCore.Localization.Routing
             string culture = null;
             string uiCulture = null;
 
-            if (!string.IsNullOrWhiteSpace(RouteDataStringKey))
+            if (!string.IsNullOrEmpty(RouteDataStringKey))
             {
-                culture = httpContext.GetRouteValue(RouteDataStringKey) as string;
+                culture = httpContext.GetRouteValue(RouteDataStringKey)?.ToString();
             }
 
-            if (!string.IsNullOrWhiteSpace(UIRouteDataStringKey))
+            if (!string.IsNullOrEmpty(UIRouteDataStringKey))
             {
-                uiCulture = httpContext.GetRouteValue(UIRouteDataStringKey) as string;
+                uiCulture = httpContext.GetRouteValue(UIRouteDataStringKey)?.ToString();
             }
 
             if (culture == null && uiCulture == null)
