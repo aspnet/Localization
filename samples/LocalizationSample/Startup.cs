@@ -18,10 +18,12 @@ namespace LocalizationSample
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLocalization(options => options.ResourcesPath = "My/Resources");
+            services.AddLocalization(options => options.ResourcesPath = "POFiles");
+            services.AddTransient<IStringLocalizerFactory, POStringLocalizerFactory>();
         }
 
-        public void Configure(IApplicationBuilder app, IStringLocalizer<Startup> SR)
+        public void Configure(IApplicationBuilder app, IStringLocalizer<Startup> SR,
+            IStringLocalizerFactory factory)
         {
             var supportedCultures = new List<CultureInfo>
             {
@@ -54,6 +56,10 @@ namespace LocalizationSample
 
             app.Use(async (context, next) =>
             {
+                CultureInfo.CurrentUICulture = new CultureInfo("es");
+                var suse = factory.Create(typeof(Startup));
+                var result = suse["CLOSE"];
+
                 if (context.Request.Path.Value.EndsWith("favicon.ico"))
                 {
                     // Pesky browsers

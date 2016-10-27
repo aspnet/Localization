@@ -1,12 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Localization
 {
     public class POStringLocalizer : IStringLocalizer
     {
         private readonly POManager _poManager;
+
+        public POStringLocalizer(Type resourceSource, IOptions<LocalizationOptions> localizationOptions)
+        {
+            _poManager = new POManager(resourceSource, localizationOptions.Value.ResourcesPath);
+        }
+
+        public POStringLocalizer(string baseName, string location, IOptions<LocalizationOptions> localizationOptions)
+        {
+            _poManager = new POManager(baseName, location, localizationOptions.Value.ResourcesPath);
+        }
 
         public LocalizedString this[string name]
         {

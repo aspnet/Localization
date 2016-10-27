@@ -8,15 +8,18 @@
     "Microsoft.Extensions.Localization": "1.2.0-*"
   },
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "embed": {
+      "include": [ "./POFiles" ]
+    }
   },
   "publishOptions": {
     "include": [
-      "web.config"
+      "web.config",
+      "POFiles"
     ]
   },
   "frameworks": {
-    "net451": {},
     "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
