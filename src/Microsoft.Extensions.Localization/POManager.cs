@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved. 
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -15,20 +18,20 @@ namespace Microsoft.Extensions.Localization
         private static readonly POParser POParser = new POParser();
 
         public POManager(string baseName, string location, string resourcesRelativePath)
+            : this(baseName, Assembly.Load(new AssemblyName(location)), resourcesRelativePath)
         {
-            throw new NotImplementedException();
-
-            //_baseName = baseName;
-            //var assemblyName = new AssemblyName(location);
-            //_assembly = Assembly.Load(assemblyName);
-            //_resourcesRelativePath = resourcesRelativePath;
         }
 
         public POManager(Type resourceSource, string resourcesRelativePath)
+            : this(resourceSource.Name, resourceSource.GetTypeInfo().Assembly, resourcesRelativePath)
         {
-            _baseName = resourceSource.Name;
-            _assembly = resourceSource.GetTypeInfo().Assembly;
-            _resourcesRelativePath = resourcesRelativePath + ".";
+        }
+
+        private POManager(string baseName, Assembly assembly, string resourcesRelativePath)
+        {
+            _baseName = baseName;
+            _assembly = assembly;
+            _resourcesRelativePath = resourcesRelativePath;
         }
 
         public string GetString(string name)
@@ -38,7 +41,8 @@ namespace Microsoft.Extensions.Localization
 
         public string GetString(string name, CultureInfo culture)
         {
-            return GetPOResults(culture)[name].Translation;
+            var poResult = GetPOResults(culture)[name];
+            return string.IsNullOrEmpty(poResult.Translation) ? poResult.Origional : poResult.Translation;
         }
 
         private IDictionary<string, POEntry> GetPOResults(CultureInfo culture)
@@ -83,7 +87,7 @@ namespace Microsoft.Extensions.Localization
         {
             return string.IsNullOrEmpty(resourcesRelativePath)
                 ? _baseName
-                : baseNamespace + "." + resourcesRelativePath + TrimPrefix(resourceName, baseNamespace + ".");
+                : baseNamespace + "." + resourcesRelativePath + "." + TrimPrefix(resourceName, baseNamespace + ".");
         }
 
         private static string TrimPrefix(string name, string prefix)

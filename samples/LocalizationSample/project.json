@@ -11,7 +11,8 @@
     "emitEntryPoint": true,
     "embed": {
       "include": [ "./POFiles" ]
-    }
+    },
+    "keyFile": "../../tools/Key.snk"
   },
   "publishOptions": {
     "include": [

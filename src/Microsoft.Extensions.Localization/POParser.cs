@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved. 
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,20 +9,20 @@ namespace Microsoft.Extensions.Localization
 {
     public class POEntry
     {
-        public POEntry(string original, string translation, string scope)
-        {
-            Origional = original;
-            Translation = translation;
-            Scope = scope;
-        }
-
-        public string Origional { get; private set; }
-        public string Translation { get; private set; }
-        public string Scope { get; private set; }
+        public string Origional { get; set; }
+        public string Translation { get; set; }
+        public IList<string> References { get; set; } = new List<string>();
+        public IList<string> Contexts { get; set; } = new List<string>();
+        public IList<string> Flags { get; set; } = new List<string>();
     }
 
     public class POParser
     {
+        private static readonly IEnumerable<string> _specialStarts = new List<string> {
+            "#",
+            "msg"
+        };
+
         private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
             { 'n', '\n' },
             { 'r', '\r' },
@@ -31,59 +33,73 @@ namespace Microsoft.Extensions.Localization
         {
             var reader = new StringReader(text);
             string poLine;
-            var scopes = new List<string>();
-            var id = string.Empty;
+            var multiLineId = true;
+            var poEntry = new POEntry();
+            var finishingEntry = false;
 
-            while ((poLine = reader.ReadLine()) != null)
+            while (true)
             {
+                poLine = reader.ReadLine();
+
+                if (finishingEntry && (poLine == null || poLine.StartsWith("#") || poLine.StartsWith("msg")))
+                {
+                    translations.Add(poEntry.Origional, poEntry);
+                    finishingEntry = false;
+                    poEntry = new POEntry();
+                }
+
+                if (poLine == null)
+                {
+                    break;
+                }
+
                 if (poLine.StartsWith("#:"))
                 {
-                    scopes.Add(ParseScope(poLine));
+                    poEntry.References.Add(ParseReference(poLine));
+                    continue;
+                }
+
+                if (poLine.StartsWith("#,"))
+                {
+                    poEntry.Flags.Add(ParseFlags(poLine));
                     continue;
                 }
 
                 if (poLine.StartsWith("msgctxt"))
                 {
-                    scopes.Add(ParseContext(poLine));
+                    //We're not able to take advantage of context due to the shape of IStringLocalizer.
+                    poEntry.Contexts.Add(ParseContext(poLine));
                     continue;
                 }
 
                 if (poLine.StartsWith("msgid"))
                 {
-                    id = ParseId(poLine);
+                    multiLineId = true;
+                    poEntry.Origional = ParseId(poLine);
                     continue;
                 }
 
                 if (poLine.StartsWith("msgstr"))
                 {
-                    var translation = ParseTranslation(poLine);
+                    finishingEntry = true;
+                    multiLineId = false;
+                    poEntry.Translation = ParseTranslation(poLine);
                     // ignore incomplete localizations (empty msgid or msgstr)
-                    if (!string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(translation))
-                    {
-                        if (scopes.Count == 0)
-                        {
-                            scopes.Add(string.Empty);
-                        }
-                        foreach (var scope in scopes)
-                        {
-                            var scopedKey = (scope + "|" + id).ToLowerInvariant();
-                            var trans = new POEntry(id, translation, scope);
-                            if (!translations.ContainsKey(scopedKey))
-                            {
-                                translations.Add(id, trans);
-                            }
-                            else
-                            {
-                                if (merge)
-                                {
-                                    translations[id] = trans;
-                                }
-                            }
-                        }
-                    }
+                    // TODO: Null translation means Translation is original
+                    continue;
+                }
 
-                    id = string.Empty;
-                    scopes = new List<string>();
+                // Continuation of a multiline
+                if (poLine.StartsWith("\""))
+                {
+                    if (multiLineId)
+                    {
+                        poEntry.Origional += ParseMultiLine(poLine);
+                    }
+                    else
+                    {
+                        poEntry.Translation += ParseMultiLine(poLine);
+                    }
                 }
             }
         }
@@ -142,9 +158,19 @@ namespace Microsoft.Extensions.Localization
             return str;
         }
 
+        private static string ParseMultiLine(string poLine)
+        {
+            return Unescape(TrimQuote(poLine));
+        }
+
         private static string ParseTranslation(string poLine)
         {
             return Unescape(TrimQuote(poLine.Substring(6).Trim()));
+        }
+
+        private static string ParseFlags(string poLine)
+        {
+            return Unescape(TrimQuote(poLine.Substring(2).Trim()));
         }
 
         private static string ParseId(string poLine)
@@ -152,7 +178,7 @@ namespace Microsoft.Extensions.Localization
             return Unescape(TrimQuote(poLine.Substring(5).Trim()));
         }
 
-        private static string ParseScope(string poLine)
+        private static string ParseReference(string poLine)
         {
             return Unescape(TrimQuote(poLine.Substring(2).Trim()));
         }
