@@ -22,7 +22,6 @@ namespace Microsoft.Extensions.Localization
         private readonly IResourceNamesCache _resourceNamesCache;
         private readonly ResourceManager _resourceManager;
         private readonly IResourceStringProvider _resourceStringProvider;
-        private readonly AssemblyWrapper _resourceAssemblyWrapper;
         private readonly string _resourceBaseName;
 
         /// <summary>
@@ -63,7 +62,6 @@ namespace Microsoft.Extensions.Localization
                   baseName,
                   resourceNamesCache)
         {
-            _resourceAssemblyWrapper = resourceAssemblyWrapper;
         }
 
         /// <summary>
