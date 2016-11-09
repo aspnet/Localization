@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -11,181 +12,143 @@ namespace Microsoft.Extensions.Localization
     {
         public string Origional { get; set; }
         public string Translation { get; set; }
-        public IList<string> References { get; set; } = new List<string>();
-        public IList<string> Contexts { get; set; } = new List<string>();
-        public IList<string> Flags { get; set; } = new List<string>();
+        public List<string> References { get; set; } = new List<string>();
+        public List<string> Contexts { get; set; } = new List<string>();
+        public List<string> Flags { get; set; } = new List<string>();
+        public string Comment { get; set; }
+    }
+
+    public enum POState
+    {
+        Original,
+        Translation,
+        References,
+        Contexts,
+        Flags
     }
 
     public class POParser
     {
-        private static readonly IEnumerable<string> _specialStarts = new List<string> {
-            "#",
-            "msg"
-        };
-
-        private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
-            { 'n', '\n' },
-            { 'r', '\r' },
-            { 't', '\t' }
-        };
-
-        public void ParseLocalizationStream(string text, IDictionary<string, POEntry> translations, bool merge)
+        internal IDictionary<string, POEntry> ParseLocalizationStream(Stream poStream)
         {
-            var reader = new StringReader(text);
-            string poLine;
-            var multiLineId = true;
-            var poEntry = new POEntry();
-            var finishingEntry = false;
+            var results = new Dictionary<string, POEntry>();
+            var entry = new POEntry();
 
-            while (true)
+            using (var reader = new StreamReader(poStream))
             {
-                poLine = reader.ReadLine();
-
-                if (finishingEntry && (poLine == null || poLine.StartsWith("#") || poLine.StartsWith("msg")))
+                string line;
+                POState? state = null;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    translations.Add(poEntry.Origional, poEntry);
-                    finishingEntry = false;
-                    poEntry = new POEntry();
-                }
-
-                if (poLine == null)
-                {
-                    break;
-                }
-
-                if (poLine.StartsWith("#:"))
-                {
-                    poEntry.References.Add(ParseReference(poLine));
-                    continue;
-                }
-
-                if (poLine.StartsWith("#,"))
-                {
-                    poEntry.Flags.Add(ParseFlags(poLine));
-                    continue;
-                }
-
-                if (poLine.StartsWith("msgctxt"))
-                {
-                    //We're not able to take advantage of context due to the shape of IStringLocalizer.
-                    poEntry.Contexts.Add(ParseContext(poLine));
-                    continue;
-                }
-
-                if (poLine.StartsWith("msgid"))
-                {
-                    multiLineId = true;
-                    poEntry.Origional = ParseId(poLine);
-                    continue;
-                }
-
-                if (poLine.StartsWith("msgstr"))
-                {
-                    finishingEntry = true;
-                    multiLineId = false;
-                    poEntry.Translation = ParseTranslation(poLine);
-                    // ignore incomplete localizations (empty msgid or msgstr)
-                    // TODO: Null translation means Translation is original
-                    continue;
-                }
-
-                // Continuation of a multiline
-                if (poLine.StartsWith("\""))
-                {
-                    if (multiLineId)
+                    if ((line.StartsWith("#") || line.StartsWith("msgid")) && entry.Origional != null)
                     {
-                        poEntry.Origional += ParseMultiLine(poLine);
+                        results.Add(entry.Origional, entry);
+                        entry = new POEntry();
                     }
-                    else
-                    {
-                        poEntry.Translation += ParseMultiLine(poLine);
-                    }
-                }
-            }
-        }
 
-        private static string Unescape(string str)
-        {
-            StringBuilder sb = null;
-            bool escaped = false;
-            for (var i = 0; i < str.Length; i++)
-            {
-                var c = str[i];
-                if (escaped)
-                {
-                    if (sb == null)
+                    if (line.StartsWith("\"") || line.StartsWith("'"))
                     {
-                        sb = new StringBuilder(str.Length);
-                        if (i > 1)
+                        var unquoted = Unquote(line);
+                        switch (state)
                         {
-                            sb.Append(str.Substring(0, i - 1));
+                            case POState.Original:
+                                entry.Origional += unquoted;
+                                break;
+                            case POState.Translation:
+                                entry.Translation += unquoted;
+                                break;
                         }
                     }
-                    char unescaped;
-                    if (_escapeTranslations.TryGetValue(c, out unescaped))
+                    else if (line.StartsWith("#:"))
                     {
-                        sb.Append(unescaped);
+                        entry.References.AddRange(ParseReferences(line));
+                        state = POState.References;
+                    }
+                    else if (line.StartsWith("#,"))
+                    {
+                        entry.Flags.AddRange(ParseFlags(line));
+                        state = POState.Flags;
+                    }
+                    else if (line.StartsWith("#"))
+                    {
+                        entry.Comment = ParseComment(line);
+                    }
+                    else if (line.StartsWith("msgid"))
+                    {
+                        entry.Origional = ParseOrigional(line);
+                        state = POState.Original;
+                    }
+                    else if (line.StartsWith("msgstr"))
+                    {
+                        entry.Translation = ParseTranslation(line);
+                        state = POState.Translation;
+                    }
+                    else if (line.StartsWith("msgctxt"))
+                    {
+                        entry.Contexts.Add(ParseContext(line));
+                    }
+                    else if (string.IsNullOrWhiteSpace(line))
+                    {
+                        // empty line, do nothing
                     }
                     else
                     {
-                        // General rule: \x ==> x
-                        sb.Append(c);
-                    }
-                    escaped = false;
-                }
-                else
-                {
-                    if (c == '\\')
-                    {
-                        escaped = true;
-                    }
-                    else if (sb != null)
-                    {
-                        sb.Append(c);
+                        throw new NotImplementedException("Unknown!");
                     }
                 }
+
+                // Add the final entry
+                results.Add(entry.Origional, entry);
             }
-            return sb == null ? str : sb.ToString();
+
+            return results;
         }
 
-        private static string TrimQuote(string str)
+        private string ParseContext(string value)
         {
-            if (str.StartsWith("\"") && str.EndsWith("\""))
+            return Trim(value, 7);
+        }
+
+        private string ParseComment(string value)
+        {
+            return Trim(value, 1);
+        }
+
+        private string ParseOrigional(string value)
+        {
+            return Unquote(Trim(value, 5));
+        }
+
+        private string ParseTranslation(string value)
+        {
+            return Unquote(Trim(value, 6));
+        }
+
+        private IEnumerable<string> ParseReferences(string value)
+        {
+            return Trim(value, 2).Split(null);
+        }
+
+        private IEnumerable<string> ParseFlags(string value)
+        {
+            return Trim(value, 2).Split(null);
+        }
+
+        private string Unquote(string value)
+        {
+            if ((value.StartsWith("'") && value.EndsWith("'")) || (value.StartsWith("\"") && value.EndsWith("\"")))
             {
-                return str.Substring(1, str.Length - 2);
+                return value.Trim().Substring(1, value.Length - 2);
             }
-
-            return str;
+            else
+            {
+                throw new FormatException("msgid and msgstr values must be surrounded with ' or \"");
+            }
         }
 
-        private static string ParseMultiLine(string poLine)
+        private string Trim(string value, int chars)
         {
-            return Unescape(TrimQuote(poLine));
-        }
-
-        private static string ParseTranslation(string poLine)
-        {
-            return Unescape(TrimQuote(poLine.Substring(6).Trim()));
-        }
-
-        private static string ParseFlags(string poLine)
-        {
-            return Unescape(TrimQuote(poLine.Substring(2).Trim()));
-        }
-
-        private static string ParseId(string poLine)
-        {
-            return Unescape(TrimQuote(poLine.Substring(5).Trim()));
-        }
-
-        private static string ParseReference(string poLine)
-        {
-            return Unescape(TrimQuote(poLine.Substring(2).Trim()));
-        }
-
-        private static string ParseContext(string poLine)
-        {
-            return Unescape(TrimQuote(poLine.Substring(7).Trim()));
+            return value.Substring(chars).Trim();
         }
     }
 }

@@ -45,42 +45,81 @@ namespace Microsoft.Extensions.Localization
             return string.IsNullOrEmpty(poResult.Translation) ? poResult.Origional : poResult.Translation;
         }
 
-        private IDictionary<string, POEntry> GetPOResults(CultureInfo culture)
+        private IDictionary<string, POEntry> GetPOResults(CultureInfo culture, bool includeParentCultures = true)
         {
-            var text = GetPOText(culture);
-            var translations = ParsePOFile(text);
+            //TODO: Cache results
+            IDictionary<string, POEntry> results = new Dictionary<string, POEntry>();
 
-            return translations;
-        }
+            CultureInfo previousCulture = null;
 
-        private IDictionary<string, POEntry> ParsePOFile(string poText)
-        {
-            var translations = new Dictionary<string, POEntry>(StringComparer.OrdinalIgnoreCase);
-
-            POParser.ParseLocalizationStream(poText, translations, true);
-
-            return translations;
-        }
-
-        private string GetPOText(CultureInfo culture)
-        {
-            using (var stream = _assembly.GetManifestResourceStream(GetResourceName(culture)))
+            // Walk the culture tree
+            while (previousCulture == null || previousCulture != culture)
             {
-                if (stream == null)
+                var text = GetPOText(culture);
+                if (text != null)
                 {
-                    throw new NotImplementedException("Do something smart!");
+                    var translations = ParsePOFile(text);
+                    results = MergePOEntryDictionary(translations, results);
                 }
-                using (var reader = new StreamReader(stream))
+
+                previousCulture = culture;
+                if (includeParentCultures)
                 {
-                    return reader.ReadToEnd();
+                    culture = culture.Parent;
                 }
             }
+
+            return results;
+        }
+
+        public IDictionary<string, POEntry> GetAllStrings(bool includeParentCultures)
+        {
+            return GetPOResults(CultureInfo.CurrentUICulture, includeParentCultures);
+        }
+
+        private IDictionary<string, POEntry> MergePOEntryDictionary(
+            IDictionary<string, POEntry> newEntrys,
+            IDictionary<string, POEntry> existingEntries)
+        {
+            foreach (var kvp in newEntrys)
+            {
+                if (!existingEntries.ContainsKey(kvp.Key))
+                {
+                    existingEntries.Add(kvp);
+                }
+            }
+
+            return existingEntries;
+        }
+
+        private IDictionary<string, POEntry> ParsePOFile(Stream poStream)
+        {
+            var translations = POParser.ParseLocalizationStream(poStream);
+
+            return translations;
+        }
+
+        private Stream GetPOText(CultureInfo culture)
+        {
+            var stream = _assembly.GetManifestResourceStream(GetResourceName(culture));
+
+            return stream;
         }
 
         private string GetResourceName(CultureInfo culture)
         {
             var baseNamespace = _assembly.GetName().Name;
-            return $"{GetResourcePrefix(_baseName, baseNamespace, _resourcesRelativePath)}.{culture.Name}.po";
+
+            var prefix = GetResourcePrefix(_baseName, baseNamespace, _resourcesRelativePath);
+
+            if (string.IsNullOrEmpty(culture.Name))
+            {
+                return $"{prefix}.po";
+            }
+            else
+            {
+                return $"{prefix}.{culture.Name}.po";
+            }
         }
 
         private string GetResourcePrefix(string resourceName, string baseNamespace, string resourcesRelativePath)

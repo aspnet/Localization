@@ -53,7 +53,12 @@ namespace Microsoft.Extensions.Localization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            throw new NotImplementedException();
+            var poEntries = _poManager.GetAllStrings(includeParentCultures);
+
+            foreach (var entries in poEntries)
+            {
+                yield return new LocalizedString(entries.Key, entries.Value.Translation);
+            }
         }
 
         public IStringLocalizer WithCulture(CultureInfo culture)

@@ -1,0 +1,45 @@
+﻿# A comment
+msgid ""
+msgstr ""
+
+msgctxt "ID without str"
+msgid "ID without str"
+msgstr ""
+
+#: reference.xml:3
+msgid "ID with ""
+msgstr "str with ""
+
+msgid 'ID with ''
+msgstr 'str with ''
+
+msgid '"'
+msgstr '"'
+
+msgid "'"
+msgstr "'"
+
+msgid ""
+"this "
+"is "
+"a "
+"multiline"
+msgstr ""
+"Multi "
+"line "
+"str"
+
+#, flag1,flag2
+msgid "flags"
+msgstr ""
+
+#| msgid previous untranslated string
+#| msgstr previous untranslated translation
+msgid "new string"
+msgstr "new translated string"
+
+#: reference.xml:1 reference.xml:2
+#: reference.xml:3
+msgid "multiple reference"
+msgstr ""
+
