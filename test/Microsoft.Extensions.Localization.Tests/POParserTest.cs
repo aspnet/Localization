@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Microsoft.Extensions.Localization
@@ -71,13 +69,9 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void ParseStream_DuplicateIDs()
         {
-            throw new NotImplementedException();
-        }
+            var stream = GetStream("DuplicateIds");
 
-        [Fact]
-        public void ParseStream_SecondItem_BothComplete()
-        {
-            throw new NotImplementedException();
+            Assert.Throws<ArgumentException>(() => Parser.ParseLocalizationStream(stream));
         }
 
         private POParser GetPOParser()

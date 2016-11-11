@@ -40,6 +40,20 @@ namespace Microsoft.Extensions.Localization
         }
 
         [Fact]
+        [ReplaceCulture("en-US", "en-US")]
+        public void GetString_MissingValueGivesKey()
+        {
+            // Arrange
+            var localizer = CreatePOLocalizer("BaseFile");
+
+            // Act
+            var result = localizer["this key isn't in the file"];
+
+            // Assert
+            Assert.Equal("this key isn't in the file", result);
+        }
+
+        [Fact]
         public void GetAllStrings_IncludeParentCultures()
         {
             // Arrange

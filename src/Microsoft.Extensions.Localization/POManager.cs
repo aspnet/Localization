@@ -41,8 +41,10 @@ namespace Microsoft.Extensions.Localization
 
         public string GetString(string name, CultureInfo culture)
         {
-            var poResult = GetPOResults(culture)[name];
-            return string.IsNullOrEmpty(poResult.Translation) ? poResult.Origional : poResult.Translation;
+            var poResults = GetPOResults(culture);
+            POEntry poResult;
+            poResults.TryGetValue(name, out poResult);
+            return string.IsNullOrEmpty(poResult?.Translation) ? name : poResult.Translation;
         }
 
         private IDictionary<string, POEntry> GetPOResults(CultureInfo culture, bool includeParentCultures = true)

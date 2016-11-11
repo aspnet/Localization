@@ -38,9 +38,13 @@ namespace Microsoft.Extensions.Localization
             {
                 string line;
                 POState? state = null;
+
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if ((line.StartsWith("#") || line.StartsWith("msgid")) && entry.Origional != null)
+                    if (
+                        (line.StartsWith("#") ||
+                            (line.StartsWith("msgctxt") || line.StartsWith("msgid")))
+                        && entry.Origional != null)
                     {
                         results.Add(entry.Origional, entry);
                         entry = new POEntry();
@@ -131,7 +135,7 @@ namespace Microsoft.Extensions.Localization
 
         private IEnumerable<string> ParseFlags(string value)
         {
-            return Trim(value, 2).Split(null);
+            return Trim(value, 2).Split(',');
         }
 
         private string Unquote(string value)

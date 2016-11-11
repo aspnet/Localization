@@ -1,6 +1,8 @@
 ﻿# A comment
 msgid ""
 msgstr ""
+"Language: en-US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "ID without str"
 msgid "ID without str"

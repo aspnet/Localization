@@ -1,0 +1,2 @@
+﻿msgid "id with '"' in it"
+msgstr "str has " in it"

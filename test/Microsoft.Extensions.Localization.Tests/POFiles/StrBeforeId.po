@@ -1,0 +1,2 @@
+﻿msgstr "this is the str"
+msg id "this is the id"

@@ -1,0 +1,5 @@
+﻿msgid "ID"
+msgstr "value1"
+
+msgid "ID"
+msgstr "value2"
