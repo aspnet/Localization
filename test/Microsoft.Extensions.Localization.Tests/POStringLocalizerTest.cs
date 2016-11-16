@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved. 
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -54,6 +55,7 @@ namespace Microsoft.Extensions.Localization
         }
 
         [Fact]
+        [ReplaceCulture("en-US", "en-US")]
         public void GetAllStrings_IncludeParentCultures()
         {
             // Arrange
@@ -92,6 +94,7 @@ namespace Microsoft.Extensions.Localization
 
             // Assert
             Assert.Equal(2, result.Count());
+            Assert.Contains("en-US", result.First());
         }
 
         private POStringLocalizer CreatePOLocalizer(string file)

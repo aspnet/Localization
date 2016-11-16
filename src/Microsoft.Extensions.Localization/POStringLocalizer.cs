@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.Extensions.Localization.Internal;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Localization
@@ -11,14 +12,23 @@ namespace Microsoft.Extensions.Localization
     public class POStringLocalizer : IStringLocalizer
     {
         private readonly POManager _poManager;
+        private readonly Type _resourceSource;
+        private readonly IOptions<LocalizationOptions> _localizationOptions;
+        private readonly string _baseName;
+        private readonly string _location;
 
         public POStringLocalizer(Type resourceSource, IOptions<LocalizationOptions> localizationOptions)
         {
+            _resourceSource = resourceSource;
+            _localizationOptions = localizationOptions;
             _poManager = new POManager(resourceSource, localizationOptions.Value.ResourcesPath);
         }
 
         public POStringLocalizer(string baseName, string location, IOptions<LocalizationOptions> localizationOptions)
         {
+            _baseName = baseName;
+            _location = location;
+            _localizationOptions = localizationOptions;
             _poManager = new POManager(baseName, location, localizationOptions.Value.ResourcesPath);
         }
 
@@ -51,9 +61,14 @@ namespace Microsoft.Extensions.Localization
             }
         }
 
-        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            var poEntries = _poManager.GetAllStrings(includeParentCultures);
+            return GetAllStrings(includeParentCultures, CultureInfo.CurrentUICulture);
+        }
+
+        protected IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures, CultureInfo culture)
+        {
+            var poEntries = _poManager.GetAllStrings(includeParentCultures, culture);
 
             foreach (var entries in poEntries)
             {
@@ -63,10 +78,19 @@ namespace Microsoft.Extensions.Localization
 
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (culture == null)
+            {
+                return this;
+            }
+            else
+            {
+                return _resourceSource == null ?
+                    new POWithCultureStringLocalizer(_baseName, _location, _localizationOptions, culture)
+                    : new POWithCultureStringLocalizer(_resourceSource, _localizationOptions, culture);
+            }
         }
 
-        protected string GetStringSafely(string name, CultureInfo culture)
+        protected virtual string GetStringSafely(string name, CultureInfo culture)
         {
             if (name == null)
             {

@@ -9,11 +9,14 @@ msgid "ID without str"
 msgstr ""
 
 #: reference.xml:3
-msgid "ID with ""
-msgstr "str with ""
+msgid "ID with \""
+msgstr "str with \""
 
-msgid 'ID with ''
-msgstr 'str with ''
+msgid 'ID with \''
+msgstr 'str with \''
+
+msgid "id with \" strings"
+msgstr "str with \" strings"
 
 msgid '"'
 msgstr '"'

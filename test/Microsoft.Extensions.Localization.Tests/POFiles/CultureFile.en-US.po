@@ -1,2 +1,2 @@
 ﻿msgid "culture alternate"
-msgstr "don't look here en-US"
+msgstr "culture alt en-US"

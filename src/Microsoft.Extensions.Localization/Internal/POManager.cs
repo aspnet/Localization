@@ -7,15 +7,13 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 
-namespace Microsoft.Extensions.Localization
+namespace Microsoft.Extensions.Localization.Internal
 {
     public class POManager
     {
         private readonly string _baseName;
         private readonly Assembly _assembly;
         private readonly string _resourcesRelativePath;
-
-        private static readonly POParser POParser = new POParser();
 
         public POManager(string baseName, string location, string resourcesRelativePath)
             : this(baseName, Assembly.Load(new AssemblyName(location)), resourcesRelativePath)
@@ -76,7 +74,12 @@ namespace Microsoft.Extensions.Localization
 
         public IDictionary<string, POEntry> GetAllStrings(bool includeParentCultures)
         {
-            return GetPOResults(CultureInfo.CurrentUICulture, includeParentCultures);
+            return GetAllStrings(includeParentCultures, CultureInfo.CurrentUICulture);
+        }
+
+        public IDictionary<string, POEntry> GetAllStrings(bool includeParentCultures, CultureInfo culture)
+        {
+            return GetPOResults(culture, includeParentCultures);
         }
 
         private IDictionary<string, POEntry> MergePOEntryDictionary(
@@ -96,7 +99,7 @@ namespace Microsoft.Extensions.Localization
 
         private IDictionary<string, POEntry> ParsePOFile(Stream poStream)
         {
-            var translations = POParser.ParseLocalizationStream(poStream);
+            var translations = new POParser(poStream).ParseLocalizationStream();
 
             return translations;
         }

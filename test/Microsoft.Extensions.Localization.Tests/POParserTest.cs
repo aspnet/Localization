@@ -1,18 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Localization.Internal;
 using Xunit;
 
 namespace Microsoft.Extensions.Localization
 {
     public class POParserTest
     {
-        public static POParser Parser = new POParser();
-
         [Fact]
         public void ParseStream_StrBeforeId()
         {
-            throw new NotImplementedException();
+            var parser = GetPOParser("StrBeforeId");
+
+            Assert.Throws<FormatException>(() => { parser.ParseLocalizationStream(); });
         }
 
         [Fact]
@@ -22,12 +23,21 @@ namespace Microsoft.Extensions.Localization
         }
 
         [Fact]
+        public void ParseStream_UnescapedQuote()
+        {
+            var parser = GetPOParser("UnescapedQuote");
+
+            Assert.Throws<FormatException>(() => parser.ParseLocalizationStream());
+        }
+
+        [Fact]
         public void ParseStream_QuotesInValue()
         {
-            var stream = GetStream("BaseFile");
+            var parser = GetPOParser("BaseFile");
 
-            var result = Parser.ParseLocalizationStream(stream);
+            var result = parser.ParseLocalizationStream();
 
+            Assert.Equal("str with \" strings", result["id with \" strings"].Translation);
             Assert.Equal("str with '", result["ID with '"].Translation);
             Assert.Equal("str with \"", result["ID with \""].Translation);
             Assert.Equal("'", result["'"].Translation);
@@ -37,9 +47,9 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void ParseStream_MultipleReferences()
         {
-            var stream = GetStream("BaseFile");
+            var parser = GetPOParser("BaseFile");
 
-            var result = Parser.ParseLocalizationStream(stream);
+            var result = parser.ParseLocalizationStream();
 
             Assert.Equal(3, result["multiple reference"].References.Count);
             Assert.Equal("reference.xml:1", result["multiple reference"].References.First());
@@ -48,9 +58,9 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void parseStream_MultipleFlags()
         {
-            var stream = GetStream("BaseFile");
+            var parser = GetPOParser("BaseFile");
 
-            var result = Parser.ParseLocalizationStream(stream);
+            var result = parser.ParseLocalizationStream();
 
             Assert.Equal(2, result["flags"].Flags.Count);
             Assert.Equal("flag2", result["flags"].Flags[1]);
@@ -59,9 +69,9 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void ParseStream_MultiLineIdAndTranslation()
         {
-            var stream = GetStream("BaseFile");
+            var parser = GetPOParser("BaseFile");
 
-            var result = Parser.ParseLocalizationStream(stream);
+            var result = parser.ParseLocalizationStream();
 
             Assert.Equal("Multi line str", result["this is a multiline"].Translation);
         }
@@ -69,19 +79,15 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void ParseStream_DuplicateIDs()
         {
-            var stream = GetStream("DuplicateIds");
-
-            Assert.Throws<ArgumentException>(() => Parser.ParseLocalizationStream(stream));
+            var parser = GetPOParser("DuplicateIds");
+            Assert.Throws<ArgumentException>(() => parser.ParseLocalizationStream());
         }
 
-        private POParser GetPOParser()
+        private POParser GetPOParser(string file)
         {
-            return new POParser();
-        }
+            var stream = File.OpenRead(string.Format($"./POFiles/{file}.po"));
 
-        private Stream GetStream(string file)
-        {
-            return File.OpenRead(string.Format($"./POFiles/{file}.po"));
+            return new POParser(stream);
         }
     }
 }
