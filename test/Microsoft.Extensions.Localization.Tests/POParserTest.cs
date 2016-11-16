@@ -19,7 +19,12 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void ParseStream_Plural()
         {
-            throw new NotImplementedException();
+            var parser = GetPOParser("Multiple");
+
+            var result = parser.ParseLocalizationStream();
+
+            Assert.Equal("plural 1 value",
+                result.First((kvp) => kvp.Value.OriginalPlural == "plural key").Value.TranslationPlurals[1]);
         }
 
         [Fact]

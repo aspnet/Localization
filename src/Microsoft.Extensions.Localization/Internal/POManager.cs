@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -37,12 +38,28 @@ namespace Microsoft.Extensions.Localization.Internal
             return GetString(name, CultureInfo.CurrentUICulture);
         }
 
+        public string GetString(string name, int plurality)
+        {
+            return GetString(name, plurality, CultureInfo.CurrentUICulture);
+        }
+
         public string GetString(string name, CultureInfo culture)
         {
             var poResults = GetPOResults(culture);
             POEntry poResult;
             poResults.TryGetValue(name, out poResult);
             return string.IsNullOrEmpty(poResult?.Translation) ? name : poResult.Translation;
+        }
+
+        public string GetString(string name, int plurality, CultureInfo culture)
+        {
+            var poResults = GetPOResults(culture);
+            POEntry poResult;
+            poResults.TryGetValue(name, out poResult);
+
+            return poResults
+                .First((kvp) => kvp.Value.OriginalPlural.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    .Value.TranslationPlurals[plurality];
         }
 
         private IDictionary<string, POEntry> GetPOResults(CultureInfo culture, bool includeParentCultures = true)

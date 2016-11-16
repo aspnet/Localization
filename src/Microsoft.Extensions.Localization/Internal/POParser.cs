@@ -10,8 +10,10 @@ namespace Microsoft.Extensions.Localization.Internal
 {
     public class POEntry
     {
-        public string Origional { get; set; }
+        public string Original { get; set; }
+        public string OriginalPlural { get; set; }
         public string Translation { get; set; }
+        public IDictionary<int, string> TranslationPlurals { get; } = new Dictionary<int, string>();
         public string Untranslated { get; set; }
         public List<string> References { get; set; } = new List<string>();
         public List<string> Contexts { get; set; } = new List<string>();
@@ -19,17 +21,27 @@ namespace Microsoft.Extensions.Localization.Internal
         public string Comment { get; set; }
     }
 
-    public enum POState
-    {
-        Original,
-        Translation,
-        References,
-        Contexts,
-        Flags
-    }
-
     public class POParser
     {
+        private static IEnumerable<Type> Lines
+        {
+            get
+            {
+                return new List<Type>
+            {
+                typeof(OrigionalLine),
+                typeof(PluralOrigional),
+                typeof(TranslationLine),
+                typeof(PluralTranslation),
+                typeof(ContextLine),
+                typeof(CommentLine),
+                typeof(FlagLine),
+                typeof(UntranslatedLine),
+                typeof(ReferencesLine)
+            };
+            }
+        }
+
         public POParser(Stream poString)
         {
             _reader = new StreamReader(poString);
@@ -40,62 +52,39 @@ namespace Microsoft.Extensions.Localization.Internal
         private Line ParseLine(string line)
         {
             Line result = null;
-
             int i = 0;
-            if (line.StartsWith(OrigionalLine.GetToken()))
+
+            foreach (var lineType in Lines)
             {
-                result = new OrigionalLine();
-                i = OrigionalLine.GetToken().Length;
-            }
-            else if (line.StartsWith(TranslationLine.GetToken()))
-            {
-                result = new TranslationLine();
-                i = TranslationLine.GetToken().Length;
-            }
-            else if (line.StartsWith(ContextLine.GetToken()))
-            {
-                result = new ContextLine();
-                i = ContextLine.GetToken().Length;
-            }
-            else if (line.StartsWith(CommentLine.GetToken()))
-            {
-                result = new CommentLine();
-                i = CommentLine.GetToken().Length;
-            }
-            else if (line.StartsWith(FlagLine.GetToken()))
-            {
-                result = new FlagLine();
-                i = FlagLine.GetToken().Length;
-            }
-            else if (line.StartsWith(ReferencesLine.GetToken()))
-            {
-                result = new ReferencesLine();
-                i = ReferencesLine.GetToken().Length;
-            }
-            else if (line.StartsWith(UntranslatedLine.GetToken()))
-            {
-                result = new UntranslatedLine();
-                i = UntranslatedLine.GetToken().Length;
-            }
-            else if (line.StartsWith("\"") || line.StartsWith("'"))
-            {
-                result = new LiteralLine();
-                i = 0;
-            }
-            else if (line != null && string.IsNullOrWhiteSpace(line))
-            {
-                result = null;
-            }
-            else
-            {
-                throw new NotImplementedException();
+                // Reflection to decrease code. Gross.
+                var getToken = lineType.GetMethod("GetToken");
+                var token = (string)getToken.Invoke(null, new object[] { });
+
+                if (line.StartsWith(token))
+                {
+                    var constructor = lineType.GetConstructor(new Type[] { });
+                    result = (Line)constructor.Invoke(new Type[] { });
+                    i = token.Length;
+                }
+                else if (line.StartsWith("\"") || line.StartsWith("'"))
+                {
+                    result = new LiteralLine();
+                    i = 0;
+                }
+                else if (line != null && string.IsNullOrWhiteSpace(line))
+                {
+                    return null;
+                }
             }
 
             if (result != null)
             {
                 result.Parse(line.Substring(i));
             }
-
+            else
+            {
+                throw new NotImplementedException();
+            }
             return result;
         }
 
@@ -116,15 +105,15 @@ namespace Microsoft.Extensions.Localization.Internal
                     if (result != null)
                     {
                         var resultType = result.GetType();
-                        if (entry.Origional != null && (resultType == typeof(OrigionalLine) || resultType.GetTypeInfo().IsSubclassOf(typeof(CommentBase))))
+                        if (entry.Original != null && (resultType == typeof(OrigionalLine) || resultType.GetTypeInfo().IsSubclassOf(typeof(CommentBase))))
                         {
-                            results.Add(entry.Origional, entry);
+                            results.Add(entry.Original, entry);
                             entry = new POEntry();
                         }
 
                         if (resultType == typeof(OrigionalLine))
                         {
-                            entry.Origional = (string)result.Value;
+                            entry.Original = (string)result.Value;
                         }
                         else if (resultType == typeof(CommentLine))
                         {
@@ -138,7 +127,7 @@ namespace Microsoft.Extensions.Localization.Internal
                         {
                             if (previousLineType == typeof(OrigionalLine))
                             {
-                                entry.Origional += (string)result.Value;
+                                entry.Original += (string)result.Value;
                             }
                             else if (previousLineType == typeof(TranslationLine))
                             {
@@ -151,7 +140,7 @@ namespace Microsoft.Extensions.Localization.Internal
                         }
                         else if (resultType == typeof(TranslationLine))
                         {
-                            if (entry.Origional == null || entry.Translation != null)
+                            if (entry.Original == null || entry.Translation != null)
                             {
                                 throw new FormatException("'msgid' must come before 'msgstr'");
                             }
@@ -170,6 +159,15 @@ namespace Microsoft.Extensions.Localization.Internal
                         {
                             entry.Untranslated = (string)result.Value;
                         }
+                        else if (resultType == typeof(PluralOrigional))
+                        {
+                            entry.OriginalPlural = (string)result.Value;
+                        }
+                        else if (resultType == typeof(PluralTranslation))
+                        {
+                            var plural = (PluralTranslation)result;
+                            entry.TranslationPlurals.Add(plural.Plural, (string)plural.Value);
+                        }
                         else
                         {
                             throw new NotImplementedException();
@@ -182,7 +180,7 @@ namespace Microsoft.Extensions.Localization.Internal
                     }
                 }
 
-                results.Add(entry.Origional, entry);
+                results.Add(entry.Original, entry);
             }
 
             return results;

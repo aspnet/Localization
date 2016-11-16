@@ -73,6 +73,14 @@ namespace Microsoft.Extensions.Localization.Internal
         }
     }
 
+    public class PluralOrigional : OrigionalLine
+    {
+        public static new string GetToken()
+        {
+            return "msgid_plural ";
+        }
+    }
+
     public class TranslationLine : TokenLine
     {
         public static new string GetToken()
@@ -83,6 +91,42 @@ namespace Microsoft.Extensions.Localization.Internal
         public override void Parse(string value)
         {
             Value = TrimQuotes(value);
+        }
+    }
+
+    public class PluralTranslation : TranslationLine
+    {
+        public int Plural { get; private set; }
+
+        public static new string GetToken()
+        {
+            return "msgstr[";
+        }
+
+        public override void Parse(string value)
+        {
+            var digit = "";
+
+            int i;
+            for (i = 0; i < value.Length; i++)
+            {
+                if (char.IsDigit(value[i]))
+                {
+                    digit += value[i];
+                    if (value[i + 1] == ']' && value[i + 2] == ' ')
+                    {
+                        i += 3;
+                        Plural = int.Parse(digit);
+                        Value = TrimQuotes(value.Substring(i, value.Length - i));
+                        return;
+                    }
+                    else
+                    {
+                        throw new FormatException();
+                    }
+                }
+
+            }
         }
     }
 
