@@ -11,8 +11,7 @@
     "emitEntryPoint": true,
     "embed": {
       "include": [ "./POFiles" ]
-    },
-    "keyFile": "../../tools/Key.snk"
+    }
   },
   "publishOptions": {
     "include": [
@@ -21,6 +20,7 @@
     ]
   },
   "frameworks": {
+    "net451": {},
     "netcoreapp1.1": {
       "dependencies": {
         "Microsoft.NETCore.App": {
