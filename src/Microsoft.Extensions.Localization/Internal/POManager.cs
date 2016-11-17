@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace Microsoft.Extensions.Localization.Internal
 {
@@ -62,28 +63,38 @@ namespace Microsoft.Extensions.Localization.Internal
                     .Value.TranslationPlurals[plurality];
         }
 
+        private static readonly ConcurrentDictionary<string, IDictionary<string, POEntry>> _poResultsCache =
+            new ConcurrentDictionary<string, IDictionary<string, POEntry>>();
+
         private IDictionary<string, POEntry> GetPOResults(CultureInfo culture, bool includeParentCultures = true)
         {
-            //TODO: Cache results
-            IDictionary<string, POEntry> results = new Dictionary<string, POEntry>();
+            IDictionary<string, POEntry> results;
 
-            CultureInfo previousCulture = null;
-
-            // Walk the culture tree
-            while (previousCulture == null || previousCulture != culture)
+            var key = GetResourceName(culture);
+            if (!_poResultsCache.TryGetValue(key, out results))
             {
-                var text = GetPOText(culture);
-                if (text != null)
+                results = new Dictionary<string, POEntry>();
+
+                CultureInfo previousCulture = null;
+
+                // Walk the culture tree
+                while (previousCulture == null || previousCulture != culture)
                 {
-                    var translations = ParsePOFile(text);
-                    results = MergePOEntryDictionary(translations, results);
+                    var text = GetPOText(culture);
+                    if (text != null)
+                    {
+                        var translations = ParsePOFile(text);
+                        results = MergePOEntryDictionary(translations, results);
+                    }
+
+                    previousCulture = culture;
+                    if (includeParentCultures)
+                    {
+                        culture = culture.Parent;
+                    }
                 }
 
-                previousCulture = culture;
-                if (includeParentCultures)
-                {
-                    culture = culture.Parent;
-                }
+                _poResultsCache[key] = results;
             }
 
             return results;

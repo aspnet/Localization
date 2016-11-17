@@ -1,5 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,12 @@ namespace Microsoft.Extensions.Localization
 {
     public class POStringLocalizerTest
     {
+        [Fact]
+        public void GetString_WithParameters()
+        {
+            throw new NotImplementedException();
+        }
+
         [Fact]
         [ReplaceCulture("en-US", "en-US")]
         public void GetString_Base()
