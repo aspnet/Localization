@@ -110,7 +110,7 @@ namespace Microsoft.Extensions.Localization.Internal
             int i;
             for (i = 0; i < value.Length; i++)
             {
-                if (char.IsDigit(value[i]))
+                if (value[i] >= '0' && value[i] <= '9')
                 {
                     digit += value[i];
                     if (value[i + 1] == ']' && value[i + 2] == ' ')
@@ -125,7 +125,6 @@ namespace Microsoft.Extensions.Localization.Internal
                         throw new FormatException();
                     }
                 }
-
             }
         }
     }

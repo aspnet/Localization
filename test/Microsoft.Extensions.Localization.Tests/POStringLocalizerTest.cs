@@ -1,5 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved. 
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
+
 using System;
 using System.Globalization;
 using System.Linq;
@@ -16,7 +17,14 @@ namespace Microsoft.Extensions.Localization
         [Fact]
         public void GetString_WithParameters()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var localization = CreatePOLocalizer("BaseFile");
+
+            // Act
+            var result = localization["replace with stuff", "THING"];
+
+            // Assert
+            Assert.Equal("replace THING with stuff", result.Value);
         }
 
         [Fact]
@@ -49,6 +57,35 @@ namespace Microsoft.Extensions.Localization
 
         [Fact]
         [ReplaceCulture("en-US", "en-US")]
+        public void GetString_CrossProject_Embed()
+        {
+            // Arrange
+            var assembly = typeof(LocalizationWebsite.Program).GetTypeInfo().Assembly;
+            var localizer = CreatePOLocalizer("BaseFileProj", "POFiles", assembly);
+
+            // Act
+            var result = localizer["base id proj"];
+
+            // Assert
+            Assert.Equal("base str proj", result);
+        }
+
+        [Fact]
+        [ReplaceCulture("en-US", "en-US")]
+        public void GetString_FindsFiles()
+        {
+            // Arrange
+            var localizer = CreatePOLocalizer("NonEmbed", "NonEmbed");
+
+            // Act
+            var result = localizer["nonembed"];
+
+            // Assert
+            Assert.Equal("nonembed base", result.Value);
+        }
+
+        [Fact]
+        [ReplaceCulture("en-US", "en-US")]
         public void GetString_MissingValueGivesKey()
         {
             // Arrange
@@ -76,7 +113,8 @@ namespace Microsoft.Extensions.Localization
         }
 
         [Fact]
-        public void GetAllString_ExcludeparentCultes()
+        [ReplaceCulture("en-US", "en-US")]
+        public void GetAllString_ExcludeParentCultures()
         {
             // Arrange
             var localizer = CreatePOLocalizer("CultureFile");
@@ -106,14 +144,24 @@ namespace Microsoft.Extensions.Localization
 
         private POStringLocalizer CreatePOLocalizer(string file)
         {
+            return CreatePOLocalizer(file, "POFiles");
+        }
+
+        private POStringLocalizer CreatePOLocalizer(string file, string resourcePath)
+        {
+            return CreatePOLocalizer(file, resourcePath, typeof(POStringLocalizerFactoryTest).GetTypeInfo().Assembly);
+        }
+
+        private POStringLocalizer CreatePOLocalizer(string file, string resourcePath, Assembly assembly)
+        {
             var options = new LocalizationOptions();
-            options.ResourcesPath = "POFiles";
+            options.ResourcesPath = resourcePath;
             var localizationOptions = new Mock<IOptions<LocalizationOptions>>();
             localizationOptions.Setup(o => o.Value).Returns(options);
 
             return new POStringLocalizer(
                 file,
-                typeof(POStringLocalizerTest).GetTypeInfo().Assembly.GetName().Name,
+                assembly.GetName().Name,
                 localizationOptions.Object);
         }
     }

@@ -34,6 +34,10 @@ msgstr ""
 "line "
 "str"
 
+#, csharp
+msgid "replace with stuff"
+msgstr "replace {0} with stuff"
+
 #, flag1,flag2
 msgid "flags"
 msgstr ""

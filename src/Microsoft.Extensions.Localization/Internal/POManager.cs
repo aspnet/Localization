@@ -70,7 +70,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             IDictionary<string, POEntry> results;
 
-            var key = GetResourceName(culture);
+            var key = GetResourceName(culture) + includeParentCultures;
             if (!_poResultsCache.TryGetValue(key, out results))
             {
                 results = new Dictionary<string, POEntry>();
@@ -134,9 +134,37 @@ namespace Microsoft.Extensions.Localization.Internal
 
         private Stream GetPOText(CultureInfo culture)
         {
-            var stream = _assembly.GetManifestResourceStream(GetResourceName(culture));
+            Stream stream = _assembly.GetManifestResourceStream(GetResourceName(culture));
+
+            if (stream == null)
+            {
+                var fileName = GetFileName(culture);
+                if (File.Exists(GetFileName(culture)))
+                {
+                    stream = File.OpenRead(GetFileName(culture));
+                }
+            }
 
             return stream;
+        }
+
+        private string GetFileName(CultureInfo culture)
+        {
+            string result = "";
+
+            if (!string.IsNullOrEmpty(_resourcesRelativePath))
+            {
+                result = _resourcesRelativePath;
+            }
+
+            result += $"/{_baseName}";
+
+            if (!string.IsNullOrEmpty(culture.Name))
+            {
+                result += $".{culture.Name}";
+            }
+
+            return result + ".po";
         }
 
         private string GetResourceName(CultureInfo culture)
