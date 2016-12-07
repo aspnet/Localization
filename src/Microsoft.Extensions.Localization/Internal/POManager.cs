@@ -13,9 +13,12 @@ namespace Microsoft.Extensions.Localization.Internal
 {
     public class POManager
     {
+        private readonly string _prefix;
+        private readonly string _baseNamespace;
         private readonly string _baseName;
         private readonly Assembly _assembly;
         private readonly string _resourcesRelativePath;
+        private readonly bool _cache = true;
 
         public POManager(string baseName, string location, string resourcesRelativePath)
             : this(baseName, Assembly.Load(new AssemblyName(location)), resourcesRelativePath)
@@ -32,6 +35,8 @@ namespace Microsoft.Extensions.Localization.Internal
             _baseName = baseName;
             _assembly = assembly;
             _resourcesRelativePath = resourcesRelativePath;
+            _baseNamespace = _assembly.GetName().Name;
+            _prefix = GetResourcePrefix(_baseName, _baseNamespace, _resourcesRelativePath);
         }
 
         public string GetString(string name)
@@ -71,7 +76,7 @@ namespace Microsoft.Extensions.Localization.Internal
             IDictionary<string, POEntry> results;
 
             var key = GetResourceName(culture) + includeParentCultures;
-            if (!_poResultsCache.TryGetValue(key, out results))
+            if (!_cache || !_poResultsCache.TryGetValue(key, out results))
             {
                 results = new Dictionary<string, POEntry>();
 
@@ -80,10 +85,10 @@ namespace Microsoft.Extensions.Localization.Internal
                 // Walk the culture tree
                 while (previousCulture == null || previousCulture != culture)
                 {
-                    var text = GetPOText(culture);
-                    if (text != null)
+                    var stream = GetPOText(culture);
+                    if (stream != null)
                     {
-                        var translations = ParsePOFile(text);
+                        var translations = ParsePOFile(stream);
                         results = MergePOEntryDictionary(translations, results);
                     }
 
@@ -132,6 +137,8 @@ namespace Microsoft.Extensions.Localization.Internal
             return translations;
         }
 
+        private IDictionary<string, bool> _existsCache = new Dictionary<string, bool>();
+
         private Stream GetPOText(CultureInfo culture)
         {
             Stream stream = _assembly.GetManifestResourceStream(GetResourceName(culture));
@@ -139,55 +146,78 @@ namespace Microsoft.Extensions.Localization.Internal
             if (stream == null)
             {
                 var fileName = GetFileName(culture);
-                if (File.Exists(GetFileName(culture)))
+                bool exists;
+                if (!_existsCache.TryGetValue(fileName, out exists))
                 {
-                    stream = File.OpenRead(GetFileName(culture));
+                    exists = File.Exists(fileName);
+                    _existsCache[fileName] = exists;
+                }
+
+                if (exists)
+                {
+                    stream = File.OpenRead(fileName);
                 }
             }
 
             return stream;
         }
 
+        private IDictionary<CultureInfo, string> _fileCache = new Dictionary<CultureInfo, string>();
+
         private string GetFileName(CultureInfo culture)
         {
-            string result = "";
-
-            if (!string.IsNullOrEmpty(_resourcesRelativePath))
+            string result;
+            if (!_fileCache.TryGetValue(culture, out result))
             {
-                result = _resourcesRelativePath;
+                result = ".";
+
+                if (!string.IsNullOrEmpty(_resourcesRelativePath))
+                {
+                    result = _resourcesRelativePath;
+                }
+
+                result += $"/{_baseName}";
+
+                if (!string.IsNullOrEmpty(culture.Name))
+                {
+                    result += $".{culture.Name}";
+                }
+
+                result += ".po";
+
+                _fileCache[culture] = result;
             }
 
-            result += $"/{_baseName}";
-
-            if (!string.IsNullOrEmpty(culture.Name))
-            {
-                result += $".{culture.Name}";
-            }
-
-            return result + ".po";
+            return result;
         }
+
+        private IDictionary<CultureInfo, string> _resourceNameCache = new Dictionary<CultureInfo, string>();
 
         private string GetResourceName(CultureInfo culture)
         {
-            var baseNamespace = _assembly.GetName().Name;
-
-            var prefix = GetResourcePrefix(_baseName, baseNamespace, _resourcesRelativePath);
-
-            if (string.IsNullOrEmpty(culture.Name))
+            string resourceName;
+            if (!_resourceNameCache.TryGetValue(culture, out resourceName))
             {
-                return $"{prefix}.po";
+                if (string.IsNullOrEmpty(culture.Name))
+                {
+                    resourceName = $"{_prefix}.po";
+                }
+                else
+                {
+                    resourceName = $"{_prefix}.{culture.Name}.po";
+                }
+
+                _resourceNameCache[culture] = resourceName;
             }
-            else
-            {
-                return $"{prefix}.{culture.Name}.po";
-            }
+
+            return resourceName;
         }
 
         private string GetResourcePrefix(string resourceName, string baseNamespace, string resourcesRelativePath)
         {
             return string.IsNullOrEmpty(resourcesRelativePath)
                 ? _baseName
-                : baseNamespace + "." + resourcesRelativePath + "." + TrimPrefix(resourceName, baseNamespace + ".");
+                : $"{baseNamespace}.{resourcesRelativePath}.{TrimPrefix(resourceName, baseNamespace + ".")}";
         }
 
         private static string TrimPrefix(string name, string prefix)

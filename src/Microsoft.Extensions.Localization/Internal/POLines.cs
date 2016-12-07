@@ -10,8 +10,6 @@ namespace Microsoft.Extensions.Localization.Internal
     {
         public object Value { get; protected set; }
 
-        public abstract void Parse(string value);
-
         protected string TrimQuotes(string value)
         {
             if (IsQuote(value[0]))
@@ -50,47 +48,65 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return value.Replace("\\\"", "\"").Replace("\\'", "'");
         }
+
+        public abstract Line Parse(string value);
     }
 
     public abstract class TokenLine : Line
     {
-        public static string GetToken()
+        protected string TrimToken(string value)
         {
-            throw new NotImplementedException();
+            return value.Substring(Token.Length);
         }
+
+        public abstract string Token { get; }
     }
 
     public class OrigionalLine : TokenLine
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "msgid ";
+            get
+            {
+                return "msgid ";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = TrimQuotes(value);
+            return new OrigionalLine { Value = TrimQuotes(TrimToken(value)) };
         }
     }
 
     public class PluralOrigional : OrigionalLine
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "msgid_plural ";
+            get
+            {
+                return "msgid_plural ";
+            }
+        }
+
+        public override Line Parse(string value)
+        {
+            return new PluralOrigional { Value = TrimQuotes(TrimToken(value)) };
         }
     }
 
     public class TranslationLine : TokenLine
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "msgstr ";
+            get
+            {
+                return "msgstr ";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = TrimQuotes(value);
+            return new TranslationLine { Value = TrimQuotes(TrimToken(value)) };
         }
     }
 
@@ -98,12 +114,15 @@ namespace Microsoft.Extensions.Localization.Internal
     {
         public int Plural { get; private set; }
 
-        public static new string GetToken()
+        public override string Token
         {
-            return "msgstr[";
+            get
+            {
+                return "msgstr[";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
             var digit = "";
 
@@ -116,9 +135,11 @@ namespace Microsoft.Extensions.Localization.Internal
                     if (value[i + 1] == ']' && value[i + 2] == ' ')
                     {
                         i += 3;
-                        Plural = int.Parse(digit);
-                        Value = TrimQuotes(value.Substring(i, value.Length - i));
-                        return;
+                        return new PluralTranslation
+                        {
+                            Plural = int.Parse(digit),
+                            Value = TrimQuotes(value.Substring(i, value.Length - i))
+                        };
                     }
                     else
                     {
@@ -126,19 +147,27 @@ namespace Microsoft.Extensions.Localization.Internal
                     }
                 }
             }
+
+            throw new NotImplementedException("Line malformed, should never reach here");
         }
     }
 
     public class ContextLine : TokenLine
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "msgctxt ";
+            get
+            {
+                return "msgctxt ";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = TrimSpaces(value);
+            return new ContextLine
+            {
+                Value = TrimSpaces(TrimToken(value))
+            };
         }
     }
 
@@ -148,61 +177,104 @@ namespace Microsoft.Extensions.Localization.Internal
 
     public class CommentLine : CommentBase
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "# ";
+            get
+            {
+                return "#";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = TrimSpaces(value);
+            return new CommentLine
+            {
+                Value = TrimSpaces(TrimToken(value))
+            };
+        }
+    }
+
+    public class ObsoleteLine : CommentBase
+    {
+        public override string Token
+        {
+            get
+            {
+                return "#~ ";
+            }
+        }
+
+        public override Line Parse(string value)
+        {
+            return null;
         }
     }
 
     public class FlagLine : CommentBase
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "#, ";
+            get
+            {
+                return "#, ";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = value.Split(',').ToList();
+            return new FlagLine
+            {
+                Value = TrimToken(value).Split(',').ToList()
+            };
         }
     }
 
     public class UntranslatedLine : CommentBase
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "#|";
+            get
+            {
+                return "#|";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = value;
+            return new UntranslatedLine
+            {
+                Value = TrimToken(value)
+            };
         }
     }
 
     public class ReferencesLine : CommentBase
     {
-        public static new string GetToken()
+        public override string Token
         {
-            return "#: ";
+            get
+            {
+                return "#: ";
+            }
         }
 
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = value.Split(' ').ToList();
+            return new ReferencesLine
+            {
+                Value = TrimToken(value).Split(' ').ToList()
+            };
         }
     }
 
     public class LiteralLine : Line
     {
-        public override void Parse(string value)
+        public override Line Parse(string value)
         {
-            Value = TrimQuotes(value);
+            return new LiteralLine
+            {
+                Value = TrimQuotes(value)
+            };
         }
     }
 }

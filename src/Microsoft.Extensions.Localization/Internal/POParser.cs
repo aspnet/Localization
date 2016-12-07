@@ -23,24 +23,19 @@ namespace Microsoft.Extensions.Localization.Internal
 
     public class POParser
     {
-        private static IEnumerable<Type> Lines
+        private static IEnumerable<TokenLine> Lines = new List<TokenLine>
         {
-            get
-            {
-                return new List<Type>
-            {
-                typeof(OrigionalLine),
-                typeof(PluralOrigional),
-                typeof(TranslationLine),
-                typeof(PluralTranslation),
-                typeof(ContextLine),
-                typeof(CommentLine),
-                typeof(FlagLine),
-                typeof(UntranslatedLine),
-                typeof(ReferencesLine)
-            };
-            }
-        }
+            new PluralOrigional(),
+            new OrigionalLine(),
+            new TranslationLine(),
+            new PluralTranslation(),
+            new ContextLine(),
+            new FlagLine(),
+            new UntranslatedLine(),
+            new ReferencesLine(),
+            new ObsoleteLine(),
+            new CommentLine()
+        };
 
         public POParser(Stream poString)
         {
@@ -52,40 +47,38 @@ namespace Microsoft.Extensions.Localization.Internal
         private Line ParseLine(string line)
         {
             Line result = null;
-            int i = 0;
 
-            foreach (var lineType in Lines)
+            if (line.StartsWith("\"") || line.StartsWith("'"))
             {
-                // Reflection to decrease code. Gross.
-                var getToken = lineType.GetMethod("GetToken");
-                var token = (string)getToken.Invoke(null, new object[] { });
+                result = new LiteralLine();
+            }
+            else if (line != null && string.IsNullOrWhiteSpace(line))
+            {
+                return null;
+            }
+            else
+            {
+                foreach (var lineObject in Lines)
+                {
+                    var token = lineObject.Token;
 
-                if (line.StartsWith(token))
-                {
-                    var constructor = lineType.GetConstructor(new Type[] { });
-                    result = (Line)constructor.Invoke(new Type[] { });
-                    i = token.Length;
-                }
-                else if (line.StartsWith("\"") || line.StartsWith("'"))
-                {
-                    result = new LiteralLine();
-                    i = 0;
-                }
-                else if (line != null && string.IsNullOrWhiteSpace(line))
-                {
-                    return null;
+                    if (line.StartsWith(token))
+                    {
+                        result = lineObject;
+                        break;
+                    }
                 }
             }
 
             if (result != null)
             {
-                result.Parse(line.Substring(i));
+                //TODO: Trim inside parse
+                return result.Parse(line);
             }
             else
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException("Not a recognized line type");
             }
-            return result;
         }
 
         internal IDictionary<string, POEntry> ParseLocalizationStream()
@@ -180,7 +173,10 @@ namespace Microsoft.Extensions.Localization.Internal
                     }
                 }
 
-                results.Add(entry.Original, entry);
+                if (entry.Original != null)
+                {
+                    results.Add(entry.Original, entry);
+                }
             }
 
             return results;

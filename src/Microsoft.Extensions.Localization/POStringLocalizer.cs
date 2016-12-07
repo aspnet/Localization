@@ -55,8 +55,9 @@ namespace Microsoft.Extensions.Localization
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                // TODO: Add more supported format styles
                 var format = GetStringSafely(name, null);
+
+                // TODO: Add more supported format styles
                 var value = string.Format(format ?? name, arguments);
                 return new LocalizedString(name, value, resourceNotFound: format == null);
             }
