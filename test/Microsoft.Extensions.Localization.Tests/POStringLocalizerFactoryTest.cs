@@ -6,10 +6,43 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
+namespace OutsideNamespace
+{
+    public class OutsideClass
+    {
+    }
+}
+
+namespace Microsoft.Extensions.Localization.Tests
+{
+    public class POStringLocalizerFactoryTest
+    {
+
+    }
+}
+
 namespace Microsoft.Extensions.Localization
 {
     public class POStringLocalizerFactoryTest
     {
+        [Fact]
+        public void Create_Type_OutsideNamespace()
+        {
+            // Arrange
+            var options = new LocalizationOptions();
+            options.ResourcesPath = "POFiles";
+            var localizationOptions = new Mock<IOptions<LocalizationOptions>>();
+            localizationOptions.Setup(o => o.Value).Returns(options);
+
+            var factory = new POStringLocalizerFactory(localizationOptions.Object);
+
+            // Act
+            var localizer = factory.Create(typeof(OutsideNamespace.OutsideClass));
+
+            // Assert
+            Assert.Equal("msg str", localizer["msg id"]);
+        }
+
         [Fact]
         public void Create_Type()
         {
@@ -22,7 +55,7 @@ namespace Microsoft.Extensions.Localization
             var factory = new POStringLocalizerFactory(localizationOptions.Object);
 
             // Act
-            var localizer = factory.Create(typeof(POStringLocalizerFactoryTest));
+            var localizer = factory.Create(typeof(Tests.POStringLocalizerFactoryTest));
 
             // Assert
             Assert.Equal("value", localizer["key"]);

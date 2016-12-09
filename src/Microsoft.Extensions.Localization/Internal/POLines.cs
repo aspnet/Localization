@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 
 namespace Microsoft.Extensions.Localization.Internal
 {
@@ -10,7 +11,7 @@ namespace Microsoft.Extensions.Localization.Internal
     {
         public object Value { get; protected set; }
 
-        protected string TrimQuotes(string value)
+        protected StringBuilder TrimQuotes(StringBuilder value)
         {
             if (IsQuote(value[0]))
             {
@@ -24,7 +25,7 @@ namespace Microsoft.Extensions.Localization.Internal
                 {
                     throw new FormatException();
                 }
-                return Unescape(value.Substring(1, i - 1));
+                return Unescape(value.Remove(0, 1).Remove(i - 1, 1));
 
                 //TODO: Check for values at the end
             }
@@ -34,17 +35,12 @@ namespace Microsoft.Extensions.Localization.Internal
             }
         }
 
-        protected string TrimSpaces(string value)
-        {
-            return value.Trim();
-        }
-
         private bool IsQuote(char character)
         {
             return character == '"' || character == '\'';
         }
 
-        private string Unescape(string value)
+        private StringBuilder Unescape(StringBuilder value)
         {
             return value.Replace("\\\"", "\"").Replace("\\'", "'");
         }
@@ -54,9 +50,9 @@ namespace Microsoft.Extensions.Localization.Internal
 
     public abstract class TokenLine : Line
     {
-        protected string TrimToken(string value)
+        protected StringBuilder TrimToken(StringBuilder value)
         {
-            return value.Substring(Token.Length);
+            return value.Remove(0, Token.Length);
         }
 
         public abstract string Token { get; }
@@ -74,7 +70,7 @@ namespace Microsoft.Extensions.Localization.Internal
 
         public override Line Parse(string value)
         {
-            return new OrigionalLine { Value = TrimQuotes(TrimToken(value)) };
+            return new OrigionalLine { Value = TrimQuotes(TrimToken(new StringBuilder(value))) };
         }
     }
 
@@ -90,7 +86,7 @@ namespace Microsoft.Extensions.Localization.Internal
 
         public override Line Parse(string value)
         {
-            return new PluralOrigional { Value = TrimQuotes(TrimToken(value)) };
+            return new PluralOrigional { Value = TrimQuotes(TrimToken(new StringBuilder(value))) };
         }
     }
 
@@ -106,7 +102,7 @@ namespace Microsoft.Extensions.Localization.Internal
 
         public override Line Parse(string value)
         {
-            return new TranslationLine { Value = TrimQuotes(TrimToken(value)) };
+            return new TranslationLine { Value = TrimQuotes(TrimToken(new StringBuilder(value))) };
         }
     }
 
@@ -126,19 +122,22 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             var digit = "";
 
+            var sb = new StringBuilder(value);
+
+            sb = sb.Remove(0, Token.Length);
+
             int i;
-            for (i = 0; i < value.Length; i++)
+            for (i = 0; i < sb.Length; i++)
             {
-                if (value[i] >= '0' && value[i] <= '9')
+                if (sb[i] >= '0' && sb[i] <= '9')
                 {
-                    digit += value[i];
-                    if (value[i + 1] == ']' && value[i + 2] == ' ')
+                    digit += sb[i];
+                    if (sb[i + 1] == ']' && sb[i + 2] == ' ')
                     {
-                        i += 3;
                         return new PluralTranslation
                         {
                             Plural = int.Parse(digit),
-                            Value = TrimQuotes(value.Substring(i, value.Length - i))
+                            Value = TrimQuotes(sb.Remove(0, i + 3))
                         };
                     }
                     else
@@ -166,7 +165,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new ContextLine
             {
-                Value = TrimSpaces(TrimToken(value))
+                Value = TrimToken(new StringBuilder(value))
             };
         }
     }
@@ -189,7 +188,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new CommentLine
             {
-                Value = TrimSpaces(TrimToken(value))
+                Value = TrimToken(new StringBuilder(value))
             };
         }
     }
@@ -224,7 +223,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new FlagLine
             {
-                Value = TrimToken(value).Split(',').ToList()
+                Value = TrimToken(new StringBuilder(value)).ToString().Split(',').ToList()
             };
         }
     }
@@ -243,7 +242,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new UntranslatedLine
             {
-                Value = TrimToken(value)
+                Value = TrimToken(new StringBuilder(value))
             };
         }
     }
@@ -262,7 +261,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new ReferencesLine
             {
-                Value = TrimToken(value).Split(' ').ToList()
+                Value = TrimToken(new StringBuilder(value)).ToString().Split(' ').ToList()
             };
         }
     }
@@ -273,7 +272,7 @@ namespace Microsoft.Extensions.Localization.Internal
         {
             return new LiteralLine
             {
-                Value = TrimQuotes(value)
+                Value = TrimQuotes(new StringBuilder(value))
             };
         }
     }

@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Localization.Test
             var collection = new ServiceCollection();
 
             // Act
-            LocalizationServiceCollectionExtensions.AddLocalizationServices(collection);
+            LocalizationServiceCollectionExtensions.AddResourceLocalizationServices(collection);
 
             // Assert
             var services = collection.ToList();
@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.Localization.Test
             var collection = new ServiceCollection();
 
             // Act
-            LocalizationServiceCollectionExtensions.AddLocalizationServices(
+            LocalizationServiceCollectionExtensions.AddResourceLocalizationServices(
                 collection,
                 options => options.ResourcesPath = "Resources");
 

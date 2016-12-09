@@ -18,7 +18,6 @@ namespace Microsoft.Extensions.Localization.Internal
         private readonly string _baseName;
         private readonly Assembly _assembly;
         private readonly string _resourcesRelativePath;
-        private readonly bool _cache = true;
 
         public POManager(string baseName, string location, string resourcesRelativePath)
             : this(baseName, Assembly.Load(new AssemblyName(location)), resourcesRelativePath)
@@ -26,7 +25,12 @@ namespace Microsoft.Extensions.Localization.Internal
         }
 
         public POManager(Type resourceSource, string resourcesRelativePath)
-            : this(resourceSource.Name, resourceSource.GetTypeInfo().Assembly, resourcesRelativePath)
+            : this(
+                new AssemblyName(resourceSource.GetTypeInfo().Assembly.FullName).Name == resourceSource.Namespace ?
+                  TrimPrefix(resourceSource.FullName, resourceSource.Namespace + ".") :
+                  resourceSource.FullName,
+                resourceSource.GetTypeInfo().Assembly,
+                resourcesRelativePath)
         {
         }
 
@@ -54,6 +58,7 @@ namespace Microsoft.Extensions.Localization.Internal
             var poResults = GetPOResults(culture);
             POEntry poResult;
             poResults.TryGetValue(name, out poResult);
+
             return string.IsNullOrEmpty(poResult?.Translation) ? name : poResult.Translation;
         }
 
@@ -68,6 +73,7 @@ namespace Microsoft.Extensions.Localization.Internal
                     .Value.TranslationPlurals[plurality];
         }
 
+        // TODO: Should possibly be MemoryCache, but not sure if we want to add that dependency
         private static readonly ConcurrentDictionary<string, IDictionary<string, POEntry>> _poResultsCache =
             new ConcurrentDictionary<string, IDictionary<string, POEntry>>();
 
@@ -76,7 +82,7 @@ namespace Microsoft.Extensions.Localization.Internal
             IDictionary<string, POEntry> results;
 
             var key = GetResourceName(culture) + includeParentCultures;
-            if (!_cache || !_poResultsCache.TryGetValue(key, out results))
+            if (!_poResultsCache.TryGetValue(key, out results))
             {
                 results = new Dictionary<string, POEntry>();
 

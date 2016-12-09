@@ -5,25 +5,95 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Microsoft.Extensions.Localization.Internal
 {
     public class POEntry
     {
-        public string Original { get; set; }
+        public StringBuilder OriginalBuilder { get; private set; }
+
+        public static StringBuilder ConcatStringBuilders(StringBuilder first, StringBuilder second)
+        {
+            for (int i = 0; i < second.Length; i++)
+            {
+                first.Append(second[i]);
+            }
+
+            return first;
+        }
+
+        public void AppendOriginalLine(StringBuilder line)
+        {
+            if (OriginalBuilder == null)
+            {
+                OriginalBuilder = new StringBuilder();
+            }
+
+            ConcatStringBuilders(OriginalBuilder, line);
+        }
+
+        private string _original;
+
+        public string Original
+        {
+            get
+            {
+                if (_original == null)
+                {
+                    _original = OriginalBuilder?.ToString();
+                }
+
+                return _original;
+            }
+        }
+
         public string OriginalPlural { get; set; }
-        public string Translation { get; set; }
-        public IDictionary<int, string> TranslationPlurals { get; } = new Dictionary<int, string>();
+
+        public StringBuilder TranslationBuilder { get; private set; }
+
+        public void AppendTranslationLine(StringBuilder line)
+        {
+            if (TranslationBuilder == null)
+            {
+                TranslationBuilder = new StringBuilder();
+            }
+
+            _translation = null;
+            ConcatStringBuilders(TranslationBuilder, line);
+        }
+
+        private string _translation;
+
+        public string Translation
+        {
+            get
+            {
+                if (_translation == null)
+                {
+                    _translation = TranslationBuilder?.ToString();
+                }
+
+                return _translation;
+            }
+        }
+
+        public IDictionary<int, string> TranslationPlurals { get; set; } = new Dictionary<int, string>();
+
         public string Untranslated { get; set; }
+
         public List<string> References { get; set; } = new List<string>();
+
         public List<string> Contexts { get; set; } = new List<string>();
+
         public List<string> Flags { get; set; } = new List<string>();
+
         public string Comment { get; set; }
     }
 
     public class POParser
     {
-        private static IEnumerable<TokenLine> Lines = new List<TokenLine>
+        private static IList<TokenLine> Lines = new List<TokenLine>
         {
             new PluralOrigional(),
             new OrigionalLine(),
@@ -58,8 +128,9 @@ namespace Microsoft.Extensions.Localization.Internal
             }
             else
             {
-                foreach (var lineObject in Lines)
+                for (int i = 0; i < Lines.Count; i++)
                 {
+                    var lineObject = Lines[i];
                     var token = lineObject.Token;
 
                     if (line.StartsWith(token))
@@ -98,7 +169,10 @@ namespace Microsoft.Extensions.Localization.Internal
                     if (result != null)
                     {
                         var resultType = result.GetType();
-                        if (entry.Original != null && (resultType == typeof(OrigionalLine) || resultType.GetTypeInfo().IsSubclassOf(typeof(CommentBase))))
+                        if (
+                            entry.OriginalBuilder != null &&
+                            (resultType == typeof(OrigionalLine) ||
+                                resultType.GetTypeInfo().IsSubclassOf(typeof(CommentBase))))
                         {
                             results.Add(entry.Original, entry);
                             entry = new POEntry();
@@ -106,25 +180,25 @@ namespace Microsoft.Extensions.Localization.Internal
 
                         if (resultType == typeof(OrigionalLine))
                         {
-                            entry.Original = (string)result.Value;
+                            entry.AppendOriginalLine((StringBuilder)result.Value);
                         }
                         else if (resultType == typeof(CommentLine))
                         {
-                            entry.Comment = (string)result.Value;
+                            entry.Comment = result.Value.ToString();
                         }
                         else if (resultType == typeof(ContextLine))
                         {
-                            entry.Contexts.Add((string)result.Value);
+                            entry.Contexts.Add(result.Value.ToString());
                         }
                         else if (resultType == typeof(LiteralLine))
                         {
                             if (previousLineType == typeof(OrigionalLine))
                             {
-                                entry.Original += (string)result.Value;
+                                entry.AppendOriginalLine((StringBuilder)result.Value);
                             }
                             else if (previousLineType == typeof(TranslationLine))
                             {
-                                entry.Translation += (string)result.Value;
+                                entry.AppendTranslationLine((StringBuilder)result.Value);
                             }
                             else
                             {
@@ -133,12 +207,12 @@ namespace Microsoft.Extensions.Localization.Internal
                         }
                         else if (resultType == typeof(TranslationLine))
                         {
-                            if (entry.Original == null || entry.Translation != null)
+                            if (entry.OriginalBuilder == null || entry.TranslationBuilder != null)
                             {
                                 throw new FormatException("'msgid' must come before 'msgstr'");
                             }
 
-                            entry.Translation = (string)result.Value;
+                            entry.AppendTranslationLine((StringBuilder)result.Value);
                         }
                         else if (resultType == typeof(FlagLine))
                         {
@@ -150,16 +224,16 @@ namespace Microsoft.Extensions.Localization.Internal
                         }
                         else if (resultType == typeof(UntranslatedLine))
                         {
-                            entry.Untranslated = (string)result.Value;
+                            entry.Untranslated = result.Value.ToString();
                         }
                         else if (resultType == typeof(PluralOrigional))
                         {
-                            entry.OriginalPlural = (string)result.Value;
+                            entry.OriginalPlural = result.Value.ToString();
                         }
                         else if (resultType == typeof(PluralTranslation))
                         {
                             var plural = (PluralTranslation)result;
-                            entry.TranslationPlurals.Add(plural.Plural, (string)plural.Value);
+                            entry.TranslationPlurals.Add(plural.Plural, plural.Value.ToString());
                         }
                         else
                         {
@@ -173,7 +247,7 @@ namespace Microsoft.Extensions.Localization.Internal
                     }
                 }
 
-                if (entry.Original != null)
+                if (entry.OriginalBuilder != null)
                 {
                     results.Add(entry.Original, entry);
                 }
