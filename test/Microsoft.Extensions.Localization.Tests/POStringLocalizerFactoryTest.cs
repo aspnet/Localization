@@ -19,6 +19,11 @@ namespace Microsoft.Extensions.Localization.Tests
     {
 
     }
+
+    public class OutsideClassFile
+    {
+
+    }
 }
 
 namespace Microsoft.Extensions.Localization
@@ -26,7 +31,25 @@ namespace Microsoft.Extensions.Localization
     public class POStringLocalizerFactoryTest
     {
         [Fact]
-        public void Create_Type_OutsideNamespace()
+        public void Create_Outsidenamespace_File()
+        {
+            // Arrange
+            var options = new LocalizationOptions();
+            options.ResourcesPath = "POFiles";
+            var localizationOptions = new Mock<IOptions<LocalizationOptions>>();
+            localizationOptions.Setup(o => o.Value).Returns(options);
+
+            var factory = new POStringLocalizerFactory(localizationOptions.Object);
+
+            // Act
+            var localizer = factory.Create(typeof(OutsideNamespace.OutsideClass));
+
+            // Assert
+            Assert.Equal("msg str", localizer["msg id"]);
+        }
+
+        [Fact]
+        public void Create_Outsidenamespace_Embed()
         {
             // Arrange
             var options = new LocalizationOptions();
