@@ -4,8 +4,12 @@
     "keyFile": "../../tools/Key.snk",
     "warningsAsErrors": true,
     "emitEntryPoint": true,
-
     "embed": [
+      "POFiles"
+    ]
+  },
+  "publishOptions": {
+    "include": [
       "POFiles"
     ]
   },
