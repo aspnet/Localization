@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Localization.Internal.POLines;
 
 namespace Microsoft.Extensions.Localization.Internal
 {
@@ -95,8 +96,8 @@ namespace Microsoft.Extensions.Localization.Internal
     {
         private static IList<TokenLine> Lines = new List<TokenLine>
         {
-            new PluralOrigional(),
-            new OrigionalLine(),
+            new PluralOriginal(),
+            new OriginalLine(),
             new TranslationLine(),
             new PluralTranslation(),
             new ContextLine(),
@@ -171,14 +172,14 @@ namespace Microsoft.Extensions.Localization.Internal
                         var resultType = result.GetType();
                         if (
                             entry.OriginalBuilder != null &&
-                            (resultType == typeof(OrigionalLine) ||
+                            (resultType == typeof(OriginalLine) ||
                                 resultType.GetTypeInfo().IsSubclassOf(typeof(CommentBase))))
                         {
                             results.Add(entry.Original, entry);
                             entry = new POEntry();
                         }
 
-                        if (resultType == typeof(OrigionalLine))
+                        if (resultType == typeof(OriginalLine))
                         {
                             entry.AppendOriginalLine((StringBuilder)result.Value);
                         }
@@ -192,7 +193,7 @@ namespace Microsoft.Extensions.Localization.Internal
                         }
                         else if (resultType == typeof(LiteralLine))
                         {
-                            if (previousLineType == typeof(OrigionalLine))
+                            if (previousLineType == typeof(OriginalLine))
                             {
                                 entry.AppendOriginalLine((StringBuilder)result.Value);
                             }
@@ -226,7 +227,7 @@ namespace Microsoft.Extensions.Localization.Internal
                         {
                             entry.Untranslated = result.Value.ToString();
                         }
-                        else if (resultType == typeof(PluralOrigional))
+                        else if (resultType == typeof(PluralOriginal))
                         {
                             entry.OriginalPlural = result.Value.ToString();
                         }

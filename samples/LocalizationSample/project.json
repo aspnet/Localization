@@ -8,15 +8,11 @@
     "Microsoft.Extensions.Localization": "1.2.0-*"
   },
   "buildOptions": {
-    "emitEntryPoint": true,
-    "embed": {
-      "include": [ "./POFiles" ]
-    }
+    "emitEntryPoint": true
   },
   "publishOptions": {
     "include": [
-      "web.config",
-      "POFiles"
+      "web.config"
     ]
   },
   "frameworks": {
