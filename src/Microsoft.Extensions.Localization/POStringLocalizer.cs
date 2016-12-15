@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Microsoft.Extensions.Localization.Internal;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +22,16 @@ namespace Microsoft.Extensions.Localization
         {
             _resourceSource = resourceSource;
             _localizationOptions = localizationOptions;
-            _poManager = new POManager(resourceSource, localizationOptions.Value.ResourcesPath);
+
+            _poManager = new POManager(resourceSource, GetResourcePath(resourceSource, localizationOptions.Value));
+        }
+
+        private static string GetResourcePath(Type resourceSource, LocalizationOptions options)
+        {
+            var assembly = resourceSource.GetTypeInfo().Assembly;
+            var resourceLocationAttribute = assembly.GetCustomAttribute<ResourceLocationAttribute>();
+
+            return resourceLocationAttribute?.ResourceLocation ?? options.ResourcesPath;
         }
 
         public POStringLocalizer(string baseName, string location, IOptions<LocalizationOptions> localizationOptions)

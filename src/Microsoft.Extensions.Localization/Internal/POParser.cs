@@ -33,45 +33,7 @@ namespace Microsoft.Extensions.Localization.Internal
 
         private StreamReader _reader;
 
-        private Line ParseLine(string line)
-        {
-            Line result = null;
-
-            if (line.StartsWith("\"") || line.StartsWith("'"))
-            {
-                result = new LiteralLine();
-            }
-            else if (line != null && string.IsNullOrWhiteSpace(line))
-            {
-                return null;
-            }
-            else
-            {
-                for (int i = 0; i < Lines.Count; i++)
-                {
-                    var lineObject = Lines[i];
-                    var token = lineObject.Token;
-
-                    if (line.StartsWith(token))
-                    {
-                        result = lineObject;
-                        break;
-                    }
-                }
-            }
-
-            if (result != null)
-            {
-                //TODO: Trim inside parse
-                return result.Parse(line);
-            }
-            else
-            {
-                throw new NotImplementedException("Not a recognized line type");
-            }
-        }
-
-        internal IDictionary<string, POEntry> ParseLocalizationStream()
+        public IDictionary<string, POEntry> ParseLocalizationStream()
         {
             var results = new Dictionary<string, POEntry>();
             var entry = new POEntry();
@@ -174,5 +136,44 @@ namespace Microsoft.Extensions.Localization.Internal
 
             return results;
         }
+
+        private Line ParseLine(string line)
+        {
+            Line result = null;
+
+            if (line.StartsWith("\"") || line.StartsWith("'"))
+            {
+                result = new LiteralLine();
+            }
+            else if (line != null && string.IsNullOrWhiteSpace(line))
+            {
+                return null;
+            }
+            else
+            {
+                for (int i = 0; i < Lines.Count; i++)
+                {
+                    var lineObject = Lines[i];
+                    var token = lineObject.Token;
+
+                    if (line.StartsWith(token))
+                    {
+                        result = lineObject;
+                        break;
+                    }
+                }
+            }
+
+            if (result != null)
+            {
+                //TODO: Trim inside parse
+                return result.Parse(line);
+            }
+            else
+            {
+                throw new NotImplementedException("Not a recognized line type");
+            }
+        }
+
     }
 }

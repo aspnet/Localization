@@ -138,9 +138,7 @@ namespace Microsoft.Extensions.Localization.Internal
 
         private IDictionary<string, POEntry> ParsePOFile(Stream poStream)
         {
-            var translations = new POParser(poStream).ParseLocalizationStream();
-
-            return translations;
+            return new POParser(poStream).ParseLocalizationStream();
         }
 
         private IDictionary<string, bool> _existsCache = new Dictionary<string, bool>();

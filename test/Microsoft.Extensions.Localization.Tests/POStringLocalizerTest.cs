@@ -60,8 +60,8 @@ namespace Microsoft.Extensions.Localization
         public void GetString_CrossProject_Embed()
         {
             // Arrange
-            var assembly = typeof(LocalizationWebsite.Program).GetTypeInfo().Assembly;
-            var localizer = CreatePOLocalizer("BaseFileProj", "POFiles", assembly);
+            var assembly = typeof(ResourcesClassLibraryWithAttribute.Model).GetTypeInfo().Assembly;
+            var localizer = CreatePOLocalizer("BaseFileProj", "ResourceFolder", assembly);
 
             // Act
             var result = localizer["base id proj"];

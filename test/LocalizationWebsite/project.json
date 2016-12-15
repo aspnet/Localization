@@ -2,15 +2,7 @@
   "version": "1.1.0-*",
   "buildOptions": {
     "warningsAsErrors": true,
-    "emitEntryPoint": true,
-    "embed": [
-      "POFiles"
-    ]
-  },
-  "publishOptions": {
-    "include": [
-      "POFiles"
-    ]
+    "emitEntryPoint": true
   },
   "dependencies": {
     "Microsoft.AspNetCore.Localization": "1.2.0-*",

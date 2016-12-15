@@ -2,7 +2,10 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "warningsAsErrors": true,
-    "keyFile": "../../tools/Key.snk"
+    "keyFile": "../../tools/Key.snk",
+    "embed": [
+      "ResourceFolder/*"
+    ]
   },
   "dependencies": {
     "Microsoft.Extensions.Localization": "1.2.0-*",
