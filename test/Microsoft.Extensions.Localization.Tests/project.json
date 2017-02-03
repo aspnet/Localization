@@ -1,12 +1,22 @@
 {
   "buildOptions": {
     "warningsAsErrors": true,
-    "keyFile": "../../tools/Key.snk"
+    "keyFile": "../../tools/Key.snk",
+    "copyToOutput": [
+      "NonEmbed"
+    ],
+    "embed": [
+      "POFiles"
+    ]
   },
   "dependencies": {
     "dotnet-test-xunit": "2.2.0-*",
+    "ResourcesClassLibraryWithAttribute": {
+      "target": "project"
+    },
     "Microsoft.Extensions.DependencyInjection": "1.2.0-*",
     "Microsoft.Extensions.Localization": "1.2.0-*",
+    "Microsoft.AspNetCore.Testing": "1.2.0-*",
     "Moq": "4.6.36-*",
     "xunit": "2.2.0-*"
   },

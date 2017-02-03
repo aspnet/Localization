@@ -1,0 +1,2 @@
+﻿msgid "culture"
+msgstr "culture en"

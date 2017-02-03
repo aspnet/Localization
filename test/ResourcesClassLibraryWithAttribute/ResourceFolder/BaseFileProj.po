@@ -1,0 +1,2 @@
+﻿msgid "base id proj"
+msgstr "base str proj"

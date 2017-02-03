@@ -1,0 +1,54 @@
+﻿# A comment
+msgid ""
+msgstr ""
+"Language: en-US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "ID without str"
+msgid "ID without str"
+msgstr ""
+
+#: reference.xml:3
+msgid "ID with \""
+msgstr "str with \""
+
+msgid 'ID with \''
+msgstr 'str with \''
+
+msgid "id with \" strings"
+msgstr "str with \" strings"
+
+msgid '"'
+msgstr '"'
+
+msgid "'"
+msgstr "'"
+
+msgid ""
+"this "
+"is "
+"a "
+"multiline"
+msgstr ""
+"Multi "
+"line "
+"str"
+
+#, csharp
+msgid "replace with stuff"
+msgstr "replace {0} with stuff"
+
+#, flag1,flag2
+msgid "flags"
+msgstr ""
+
+#| msgid previous untranslated string
+#| msgstr previous untranslated translation
+msgid "new string"
+msgstr "new translated string"
+
+#: reference.xml:1 reference.xml:2
+#: reference.xml:3
+msgid "multiple reference"
+msgstr ""
+

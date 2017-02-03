@@ -1,0 +1,2 @@
+﻿msgid "culture alternate"
+msgstr "culture alt en-US"

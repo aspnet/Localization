@@ -1,0 +1,5 @@
+﻿msgid "ignore this"
+msgstr "still ignore it"
+
+msgstr "this is the str"
+msgid "this is the id"

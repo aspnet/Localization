@@ -1,0 +1,2 @@
+﻿msgid "msg id"
+msgstr "msg str"

@@ -13,6 +13,49 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class LocalizationServiceCollectionExtensions
     {
         /// <summary>
+        /// Adds services required for application localization using PO files.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+        public static IServiceCollection AddPOFileLocalization(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddOptions();
+
+            AddPOLocalizationServices(services);
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds services required for application localization using PO files.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+        /// <param name="setupAction">
+        /// An <see cref="Action{LocalizationOptions}"/> to configure the <see cref="LocalizationOptions"/>.
+        /// </param>
+        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+        public static IServiceCollection AddPOFileLocalization(
+            this IServiceCollection services,
+            Action<LocalizationOptions> setupAction)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddOptions();
+
+            AddPOLocalizationServices(services, setupAction);
+
+            return services;
+        }
+
+        /// <summary>
         /// Adds services required for application localization.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
@@ -26,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddOptions();
 
-            AddLocalizationServices(services);
+            AddResourceLocalizationServices(services);
 
             return services;
         }
@@ -53,23 +96,37 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(setupAction));
             }
 
-            AddLocalizationServices(services, setupAction);
+            AddResourceLocalizationServices(services, setupAction);
 
             return services;
         }
 
+        internal static void AddPOLocalizationServices(IServiceCollection services)
+        {
+            services.TryAddSingleton<IStringLocalizerFactory, POStringLocalizerFactory>();
+            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+        }
+
+        internal static void AddPOLocalizationServices(
+            IServiceCollection services,
+            Action<LocalizationOptions> setupAction)
+        {
+            AddPOLocalizationServices(services);
+            services.Configure(setupAction);
+        }
+
         // To enable unit testing
-        internal static void AddLocalizationServices(IServiceCollection services)
+        internal static void AddResourceLocalizationServices(IServiceCollection services)
         {
             services.TryAddSingleton<IStringLocalizerFactory, ResourceManagerStringLocalizerFactory>();
             services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
         }
 
-        internal static void AddLocalizationServices(
+        internal static void AddResourceLocalizationServices(
             IServiceCollection services,
             Action<LocalizationOptions> setupAction)
         {
-            AddLocalizationServices(services);
+            AddResourceLocalizationServices(services);
             services.Configure(setupAction);
         }
     }
