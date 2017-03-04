@@ -77,36 +77,11 @@ namespace Microsoft.Extensions.Localization
             IResourceNamesCache resourceNamesCache,
             ILogger logger)
         {
-            if (resourceManager == null)
-            {
-                throw new ArgumentNullException(nameof(resourceManager));
-            }
-
-            if (resourceStringProvider == null)
-            {
-                throw new ArgumentNullException(nameof(resourceStringProvider));
-            }
-
-            if (baseName == null)
-            {
-                throw new ArgumentNullException(nameof(baseName));
-            }
-
-            if (resourceNamesCache == null)
-            {
-                throw new ArgumentNullException(nameof(resourceNamesCache));
-            }
-
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            _resourceStringProvider = resourceStringProvider;
-            _resourceManager = resourceManager;
-            _resourceBaseName = baseName;
-            _resourceNamesCache = resourceNamesCache;
-            _logger = logger;
+            _resourceStringProvider = resourceStringProvider ?? throw new ArgumentNullException(nameof(resourceStringProvider));
+            _resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
+            _resourceBaseName = baseName ?? throw new ArgumentNullException(nameof(baseName));
+            _resourceNamesCache = resourceNamesCache ?? throw new ArgumentNullException(nameof(resourceNamesCache));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc />

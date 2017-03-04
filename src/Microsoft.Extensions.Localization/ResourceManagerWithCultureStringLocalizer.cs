@@ -57,12 +57,7 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(resourceNamesCache));
             }
 
-            if (culture == null)
-            {
-                throw new ArgumentNullException(nameof(culture));
-            }
-
-            _culture = culture;
+            _culture = culture ?? throw new ArgumentNullException(nameof(culture));
         }
 
         /// <summary>
@@ -103,12 +98,7 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(resourceNamesCache));
             }
 
-            if (culture == null)
-            {
-                throw new ArgumentNullException(nameof(culture));
-            }
-
-            _culture = culture;
+            _culture = culture ?? throw new ArgumentNullException(nameof(culture));
         }
 
         /// <inheritdoc />

@@ -20,12 +20,7 @@ namespace Microsoft.AspNetCore.Localization
         /// <param name="provider">The provider delegate.</param>
         public CustomRequestCultureProvider(Func<HttpContext, Task<ProviderCultureResult>> provider)
         {
-            if (provider == null)
-            {
-                throw new ArgumentNullException(nameof(provider));
-            }
-
-            _provider = provider;
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         /// <inheritdoc />

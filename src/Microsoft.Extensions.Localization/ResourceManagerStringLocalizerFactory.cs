@@ -41,13 +41,8 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(localizationOptions));
             }
 
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
-
             _resourcesRelativePath = localizationOptions.Value.ResourcesPath ?? string.Empty;
-            _loggerFactory = loggerFactory;
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             if (!string.IsNullOrEmpty(_resourcesRelativePath))
             {

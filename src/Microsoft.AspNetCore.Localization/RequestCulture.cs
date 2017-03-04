@@ -50,18 +50,8 @@ namespace Microsoft.AspNetCore.Localization
         /// <param name="uiCulture">The <see cref="CultureInfo"/> for the request to be used for text, i.e. language.</param>
         public RequestCulture(CultureInfo culture, CultureInfo uiCulture)
         {
-            if (culture == null)
-            {
-                throw new ArgumentNullException(nameof(culture));
-            }
-
-            if (uiCulture == null)
-            {
-                throw new ArgumentNullException(nameof(uiCulture));
-            }
-
-            Culture = culture;
-            UICulture = uiCulture;
+            Culture = culture ?? throw new ArgumentNullException(nameof(culture));
+            UICulture = uiCulture ?? throw new ArgumentNullException(nameof(uiCulture));
         }
 
         /// <summary>

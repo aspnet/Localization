@@ -40,18 +40,8 @@ namespace Microsoft.Extensions.Localization
         /// <param name="searchedLocation">The location which was searched for a localization value.</param>
         public LocalizedString(string name, string value, bool resourceNotFound, string searchedLocation)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            Name = name;
-            Value = value;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Value = value ?? throw new ArgumentNullException(nameof(value));
             ResourceNotFound = resourceNotFound;
             SearchedLocation = searchedLocation;
         }
