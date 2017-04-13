@@ -5,12 +5,12 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Localization": "1.1.1",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.1.1",
-    "Microsoft.AspNetCore.Testing": "1.1.0-rtm-22752",
-    "Microsoft.Extensions.Configuration.CommandLine": "1.1.1",
-    "Microsoft.Extensions.Localization": "1.1.1",
-    "Microsoft.Extensions.Logging.Console": "1.1.1",
+    "Microsoft.AspNetCore.Localization": "1.1.2",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.2",
+    "Microsoft.AspNetCore.Testing": "1.1.1",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.1.2",
+    "Microsoft.Extensions.Localization": "1.1.2",
+    "Microsoft.Extensions.Logging.Console": "1.1.2",
     "ResourcesClassLibraryNoAttribute": "1.0.0-*",
     "ResourcesClassLibraryWithAttribute": "1.0.0-*"
   },

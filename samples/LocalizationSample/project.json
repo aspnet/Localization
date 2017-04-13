@@ -1,11 +1,11 @@
 {
   "version": "1.1.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Localization": "1.1.1",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.1",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.1.1",
-    "Microsoft.Extensions.Configuration.CommandLine": "1.1.1",
-    "Microsoft.Extensions.Localization": "1.1.1"
+    "Microsoft.AspNetCore.Localization": "1.1.2",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.2",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.2",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.1.2",
+    "Microsoft.Extensions.Localization": "1.1.2"
   },
   "buildOptions": {
     "emitEntryPoint": true
