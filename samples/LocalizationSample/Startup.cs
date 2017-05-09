@@ -21,7 +21,7 @@ namespace LocalizationSample
             services.AddLocalization(options => options.ResourcesPath = "My/Resources");
         }
 
-        public void Configure(IApplicationBuilder app, IStringLocalizer<Startup> SR)
+        public void Configure(IApplicationBuilder app)
         {
             var supportedCultures = new List<CultureInfo>
             {
@@ -46,11 +46,11 @@ namespace LocalizationSample
             //{
 
             //}));
-
             app.UseRequestLocalization(options);
 
             app.Use(async (context, next) =>
             {
+                var SR = context.RequestServices.GetRequiredService<IStringLocalizer<Startup>>();
                 if (context.Request.Path.Value.EndsWith("favicon.ico"))
                 {
                     // Pesky browsers
