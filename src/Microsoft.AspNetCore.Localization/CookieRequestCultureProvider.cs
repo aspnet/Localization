@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Localization
 {
@@ -40,7 +39,7 @@ namespace Microsoft.AspNetCore.Localization
 
             if (string.IsNullOrEmpty(cookie))
             {
-                return TaskCache<ProviderCultureResult>.DefaultCompletedTask;
+                return Task.FromResult(default(ProviderCultureResult));
             }
 
             var providerResultCulture = ParseCookieValue(cookie);

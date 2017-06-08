@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Internal;
 using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.AspNetCore.Localization
@@ -34,7 +33,7 @@ namespace Microsoft.AspNetCore.Localization
 
             if (acceptLanguageHeader == null || acceptLanguageHeader.Count == 0)
             {
-                return TaskCache<ProviderCultureResult>.DefaultCompletedTask;
+                return Task.FromResult(default(ProviderCultureResult));
             }
 
             var languages = acceptLanguageHeader.AsEnumerable();
@@ -54,7 +53,7 @@ namespace Microsoft.AspNetCore.Localization
                 return Task.FromResult(new ProviderCultureResult(orderedLanguages));
             }
 
-            return TaskCache<ProviderCultureResult>.DefaultCompletedTask;
+            return Task.FromResult(default(ProviderCultureResult));
         }
     }
 }
