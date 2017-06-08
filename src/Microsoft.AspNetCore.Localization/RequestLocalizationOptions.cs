@@ -42,12 +42,7 @@ namespace Microsoft.AspNetCore.Builder
             }
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _defaultRequestCulture = value;
+                _defaultRequestCulture = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 

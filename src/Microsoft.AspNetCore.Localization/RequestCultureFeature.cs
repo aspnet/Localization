@@ -17,12 +17,7 @@ namespace Microsoft.AspNetCore.Localization
         /// <param name="provider">The <see cref="IRequestCultureProvider"/>.</param>
         public RequestCultureFeature(RequestCulture requestCulture, IRequestCultureProvider provider)
         {
-            if (requestCulture == null)
-            {
-                throw new ArgumentNullException(nameof(requestCulture));
-            }
-
-            RequestCulture = requestCulture;
+            RequestCulture = requestCulture ?? throw new ArgumentNullException(nameof(requestCulture));
             Provider = provider;
         }
 

@@ -11,12 +11,7 @@ namespace Microsoft.Extensions.Localization.Internal
     {
         public AssemblyWrapper(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-
-            Assembly = assembly;
+            Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
         }
 
         public Assembly Assembly { get; }
