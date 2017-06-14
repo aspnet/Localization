@@ -2,9 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Localization.Internal;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.AspNetCore.Localization
 {
@@ -16,6 +21,7 @@ namespace Microsoft.AspNetCore.Localization
         private static readonly char[] _cookieSeparator = new[] { '|' };
         private static readonly string _culturePrefix = "c=";
         private static readonly string _uiCulturePrefix = "uic=";
+        private static ILogger _logger;
 
         /// <summary>
         /// Represent the default cookie name used to track the user's preferred culture information, which is ".AspNetCore.Culture".
@@ -35,6 +41,8 @@ namespace Microsoft.AspNetCore.Localization
             {
                 throw new ArgumentNullException(nameof(httpContext));
             }
+
+            _logger = httpContext.RequestServices.GetService<ILogger>() ?? NullLogger.Instance;
 
             var cookie = httpContext.Request.Cookies[CookieName];
 
@@ -98,6 +106,16 @@ namespace Microsoft.AspNetCore.Localization
             var cultureName = potentialCultureName.Substring(_culturePrefix.Length);
             var uiCultureName = potentialUICultureName.Substring(_uiCulturePrefix.Length);
 
+            if (!IsValidCulture(cultureName))
+            {
+                _logger.ParsedCulture(nameof(CookieRequestCultureProvider), cultureName);
+            }
+
+            if (!IsValidCulture(uiCultureName))
+            {
+                _logger.ParsedCulture(nameof(CookieRequestCultureProvider), uiCultureName);
+            }
+
             if (cultureName == null && uiCultureName == null)
             {
                 // No values specified for either so no match
@@ -117,6 +135,19 @@ namespace Microsoft.AspNetCore.Localization
             }
 
             return new ProviderCultureResult(cultureName, uiCultureName);
+        }
+
+        private static bool IsValidCulture(string cultureName)
+        {
+            try
+            {
+                CultureInfo.GetCultureInfo(cultureName);
+                return true;
+            }
+            catch (CultureNotFoundException)
+            {
+                return false;
+            }
         }
     }
 }
