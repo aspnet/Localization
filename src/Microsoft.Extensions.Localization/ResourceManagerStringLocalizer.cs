@@ -2,9 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
 using Microsoft.Extensions.Localization.Internal;
@@ -22,7 +24,7 @@ namespace Microsoft.Extensions.Localization
         private readonly ConcurrentDictionary<string, object> _missingManifestCache = new ConcurrentDictionary<string, object>();
         private readonly IResourceNamesCache _resourceNamesCache;
         private readonly ResourceManager _resourceManager;
-        private readonly IResourceStringProvider _resourceStringProvider;
+        private readonly AssemblyWrapper _resourceAssemblyWrapper;
         private readonly string _resourceBaseName;
         private readonly ILogger _logger;
 
@@ -58,33 +60,15 @@ namespace Microsoft.Extensions.Localization
             string baseName,
             IResourceNamesCache resourceNamesCache,
             ILogger logger)
-            : this(
-                  resourceManager,
-                  new AssemblyResourceStringProvider(resourceNamesCache, resourceAssemblyWrapper, baseName),
-                  baseName,
-                  resourceNamesCache,
-                  logger)
-        {
-        }
-
-        /// <summary>
-        /// Intended for testing purposes only.
-        /// </summary>
-        public ResourceManagerStringLocalizer(
-            ResourceManager resourceManager,
-            IResourceStringProvider resourceStringProvider,
-            string baseName,
-            IResourceNamesCache resourceNamesCache,
-            ILogger logger)
         {
             if (resourceManager == null)
             {
                 throw new ArgumentNullException(nameof(resourceManager));
             }
 
-            if (resourceStringProvider == null)
+            if (resourceAssemblyWrapper == null)
             {
-                throw new ArgumentNullException(nameof(resourceStringProvider));
+                throw new ArgumentNullException(nameof(resourceAssemblyWrapper));
             }
 
             if (baseName == null)
@@ -102,7 +86,7 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(logger));
             }
 
-            _resourceStringProvider = resourceStringProvider;
+            _resourceAssemblyWrapper = resourceAssemblyWrapper;
             _resourceManager = resourceManager;
             _resourceBaseName = baseName;
             _resourceNamesCache = resourceNamesCache;
@@ -152,13 +136,13 @@ namespace Microsoft.Extensions.Localization
             return culture == null
                 ? new ResourceManagerStringLocalizer(
                     _resourceManager,
-                    _resourceStringProvider,
+                    _resourceAssemblyWrapper.Assembly,
                     _resourceBaseName,
                     _resourceNamesCache,
                     _logger)
                 : new ResourceManagerWithCultureStringLocalizer(
                     _resourceManager,
-                    _resourceStringProvider,
+                    _resourceAssemblyWrapper.Assembly,
                     _resourceBaseName,
                     _resourceNamesCache,
                     culture,
@@ -184,7 +168,7 @@ namespace Microsoft.Extensions.Localization
 
             var resourceNames = includeParentCultures
                 ? GetResourceNamesFromCultureHierarchy(culture)
-                : _resourceStringProvider.GetAllResourceStrings(culture, true);
+                : GetAllResourceStrings(culture, true);
 
             foreach (var name in resourceNames)
             {
@@ -233,13 +217,11 @@ namespace Microsoft.Extensions.Localization
         {
             var currentCulture = startingCulture;
             var resourceNames = new HashSet<string>();
-
             var hasAnyCultures = false;
 
             while (true)
             {
-
-                var cultureResourceNames = _resourceStringProvider.GetAllResourceStrings(currentCulture, false);
+                var cultureResourceNames = GetAllResourceStrings(currentCulture, false);
 
                 if (cultureResourceNames != null)
                 {
@@ -265,6 +247,12 @@ namespace Microsoft.Extensions.Localization
             }
 
             return resourceNames;
+        }
+
+        private IList<string> GetAllResourceStrings(CultureInfo culture, bool throwOnMissing)
+        {
+            var resourceSet = _resourceManager.GetResourceSet(culture, !throwOnMissing, throwOnMissing);
+            return resourceSet?.Cast<DictionaryEntry>().Select(r => (string)r.Key).ToList();
         }
     }
 }

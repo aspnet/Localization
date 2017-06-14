@@ -24,18 +24,9 @@ namespace Microsoft.Extensions.Localization.Tests
             var baseName = "test";
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
-            var resourceStreamManager = new TestResourceStringProvider(resourceNamesCache, resourceAssembly, baseName);
             var logger = Logger;
-            var localizer1 = new ResourceManagerStringLocalizer(resourceManager,
-                resourceStreamManager,
-                baseName,
-                resourceNamesCache,
-                logger);
-            var localizer2 = new ResourceManagerStringLocalizer(resourceManager,
-                resourceStreamManager,
-                baseName,
-                resourceNamesCache,
-                logger);
+            var localizer1 = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, logger);
+            var localizer2 = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, logger);
 
             // Act
             for (int i = 0; i < 5; i++)
@@ -59,21 +50,9 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceAssembly2 = new TestAssemblyWrapper("Assembly2");
             var resourceManager1 = new TestResourceManager(baseName, resourceAssembly1.Assembly);
             var resourceManager2 = new TestResourceManager(baseName, resourceAssembly2.Assembly);
-            var resourceStreamManager1 = new TestResourceStringProvider(resourceNamesCache, resourceAssembly1, baseName);
-            var resourceStreamManager2 = new TestResourceStringProvider(resourceNamesCache, resourceAssembly2, baseName);
             var logger = Logger;
-            var localizer1 = new ResourceManagerStringLocalizer(
-                resourceManager1,
-                resourceStreamManager1,
-                baseName,
-                resourceNamesCache,
-                logger);
-            var localizer2 = new ResourceManagerStringLocalizer(
-                resourceManager2,
-                resourceStreamManager2,
-                baseName,
-                resourceNamesCache,
-                logger);
+            var localizer1 = new ResourceManagerStringLocalizer(resourceManager1, resourceAssembly1, baseName, resourceNamesCache, logger);
+            var localizer2 = new ResourceManagerStringLocalizer(resourceManager2, resourceAssembly2, baseName, resourceNamesCache, logger);
 
             // Act
             localizer1.GetAllStrings().ToList();
@@ -93,14 +72,8 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceNamesCache = new ResourceNamesCache();
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
-            var resourceStreamManager = new TestResourceStringProvider(resourceNamesCache, resourceAssembly, baseName);
             var logger = Logger;
-            var localizer = new ResourceManagerStringLocalizer(
-                resourceManager,
-                resourceStreamManager,
-                baseName,
-                resourceNamesCache,
-                logger);
+            var localizer = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, logger);
 
             // Act
             var value = localizer["name"];
@@ -118,12 +91,11 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceNamesCache = new ResourceNamesCache();
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
-            var resourceStreamManager = new TestResourceStringProvider(resourceNamesCache, resourceAssembly, baseName);
             var logger = Logger;
 
             var localizer = new ResourceManagerStringLocalizer(
                 resourceManager,
-                resourceStreamManager,
+                resourceAssembly,
                 baseName,
                 resourceNamesCache,
                 logger);
@@ -146,11 +118,10 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceNamesCache = new ResourceNamesCache();
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
-            var resourceStreamManager = new TestResourceStringProvider(resourceNamesCache, resourceAssembly, baseName);
             var logger = Logger;
             var localizer = new ResourceManagerStringLocalizer(
                 resourceManager,
-                resourceStreamManager,
+                resourceAssembly,
                 baseName,
                 resourceNamesCache,
                 logger);
@@ -245,25 +216,6 @@ namespace Microsoft.Extensions.Localization.Tests
             }
 
             public override string GetString(string name, CultureInfo culture) => null;
-        }
-
-        public class TestResourceStringProvider : AssemblyResourceStringProvider
-        {
-            private TestAssemblyWrapper _assemblyWrapper;
-
-            public TestResourceStringProvider(
-                    IResourceNamesCache resourceCache,
-                    TestAssemblyWrapper assemblyWrapper,
-                    string resourceBaseName)
-                : base(resourceCache, assemblyWrapper, resourceBaseName)
-            {
-                _assemblyWrapper = assemblyWrapper;
-            }
-
-            protected override AssemblyWrapper GetAssembly(CultureInfo culture)
-            {
-                return _assemblyWrapper;
-            }
         }
 
         public class TestAssemblyWrapper : AssemblyWrapper
