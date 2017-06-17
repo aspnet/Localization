@@ -19,5 +19,8 @@ namespace Microsoft.Extensions.Localization
         {
             return _cache.GetOrAdd(name, valueFactory);
         }
+
+        /// <inheritdoc />
+        public int Count => _cache.Count;
     }
 }

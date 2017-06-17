@@ -18,5 +18,10 @@ namespace Microsoft.Extensions.Localization
         /// <param name="valueFactory">The function used to generate the string names for the resource.</param>
         /// <returns>The string names for the resource.</returns>
         IList<string> GetOrAdd(string name, Func<string, IList<string>> valueFactory);
+
+        /// <summary>
+        /// Gets the number of the cached resource names.
+        /// </summary>
+        int Count { get; }
     }
 }

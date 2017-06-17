@@ -37,15 +37,16 @@ namespace Microsoft.Extensions.Localization.Tests
 
             // Assert
             var expectedCallCount = GetCultureInfoDepth(CultureInfo.CurrentUICulture);
-            Assert.Equal(expectedCallCount, resourceAssembly.GetManifestResourceStreamCallCount);
+            Assert.Equal(expectedCallCount, resourceNamesCache.Count);
         }
 
         [Fact]
         public void EnumeratorCacheIsScopedByAssembly()
         {
             // Arrange
-            var resourceNamesCache = new ResourceNamesCache();
             var baseName = "Microsoft.Extensions.Localization.Tests.Resources.Test";
+            var resourceNamesCache1 = new ResourceNamesCache();
+            var resourceNamesCache2 = new ResourceNamesCache();
             var resourceAssembly1 = new TestAssemblyWrapper("Assembly1");
             var resourceAssembly2 = new TestAssemblyWrapper("Assembly2");
             var resourceManager1 = new TestResourceManager(baseName, resourceAssembly1.Assembly);
@@ -55,13 +56,13 @@ namespace Microsoft.Extensions.Localization.Tests
                 resourceManager1,
                 resourceAssembly1,
                 baseName,
-                resourceNamesCache,
+                resourceNamesCache1,
                 logger);
             var localizer2 = new ResourceManagerStringLocalizer(
                 resourceManager2,
                 resourceAssembly2,
                 baseName,
-                resourceNamesCache,
+                resourceNamesCache2,
                 logger);
 
             // Act
@@ -70,8 +71,8 @@ namespace Microsoft.Extensions.Localization.Tests
 
             // Assert
             var expectedCallCount = GetCultureInfoDepth(CultureInfo.CurrentUICulture);
-            Assert.Equal(expectedCallCount, resourceAssembly1.GetManifestResourceStreamCallCount);
-            Assert.Equal(expectedCallCount, resourceAssembly2.GetManifestResourceStreamCallCount);
+            Assert.Equal(expectedCallCount, resourceNamesCache1.Count);
+            Assert.Equal(expectedCallCount, resourceNamesCache2.Count);
         }
 
         [Fact]
@@ -177,16 +178,6 @@ namespace Microsoft.Extensions.Localization.Tests
             Assert.Equal(expected, exception.Message);
         }
 
-        private static Stream MakeResourceStream()
-        {
-            var stream = new MemoryStream();
-            var resourceWriter = new ResourceWriter(stream);
-            resourceWriter.AddResource("TestName", "value");
-            resourceWriter.Generate();
-            stream.Position = 0;
-            return stream;
-        }
-
         private static int GetCultureInfoDepth(CultureInfo culture)
         {
             var result = 0;
@@ -236,15 +227,15 @@ namespace Microsoft.Extensions.Localization.Tests
                 FullName = name;
             }
 
-            public int GetManifestResourceStreamCallCount { get; private set; }
+            //public int GetManifestResourceStreamCallCount { get; private set; }
 
             public override string FullName { get; }
 
-            public override Stream GetManifestResourceStream(string name)
-            {
-                GetManifestResourceStreamCallCount++;
-                return MakeResourceStream();
-            }
+            //public override Stream GetManifestResourceStream(string name)
+            //{
+            //    GetManifestResourceStreamCallCount++;
+            //    return MakeResourceStream();
+            //}
         }
     }
 }
