@@ -19,9 +19,9 @@ namespace Microsoft.Extensions.Localization.Tests
         [Fact]
         public void EnumeratorCachesCultureWalkForSameAssembly()
         {
-            // Arrange
+            // Arrange        
+            var baseName = "Microsoft.Extensions.Localization.Tests.Resources.Test";
             var resourceNamesCache = new ResourceNamesCache();
-            var baseName = "test";
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
             var logger = Logger;
@@ -45,14 +45,24 @@ namespace Microsoft.Extensions.Localization.Tests
         {
             // Arrange
             var resourceNamesCache = new ResourceNamesCache();
-            var baseName = "test";
+            var baseName = "Microsoft.Extensions.Localization.Tests.Resources.Test";
             var resourceAssembly1 = new TestAssemblyWrapper("Assembly1");
             var resourceAssembly2 = new TestAssemblyWrapper("Assembly2");
             var resourceManager1 = new TestResourceManager(baseName, resourceAssembly1.Assembly);
             var resourceManager2 = new TestResourceManager(baseName, resourceAssembly2.Assembly);
             var logger = Logger;
-            var localizer1 = new ResourceManagerStringLocalizer(resourceManager1, resourceAssembly1, baseName, resourceNamesCache, logger);
-            var localizer2 = new ResourceManagerStringLocalizer(resourceManager2, resourceAssembly2, baseName, resourceNamesCache, logger);
+            var localizer1 = new ResourceManagerStringLocalizer(
+                resourceManager1,
+                resourceAssembly1,
+                baseName,
+                resourceNamesCache,
+                logger);
+            var localizer2 = new ResourceManagerStringLocalizer(
+                resourceManager2,
+                resourceAssembly2,
+                baseName,
+                resourceNamesCache,
+                logger);
 
             // Act
             localizer1.GetAllStrings().ToList();
@@ -73,7 +83,12 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
             var logger = Logger;
-            var localizer = new ResourceManagerStringLocalizer(resourceManager, resourceAssembly, baseName, resourceNamesCache, logger);
+            var localizer = new ResourceManagerStringLocalizer(
+                resourceManager,
+                resourceAssembly,
+                baseName,
+                resourceNamesCache,
+                logger);
 
             // Act
             var value = localizer["name"];
@@ -92,7 +107,6 @@ namespace Microsoft.Extensions.Localization.Tests
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
             var logger = Logger;
-
             var localizer = new ResourceManagerStringLocalizer(
                 resourceManager,
                 resourceAssembly,
@@ -114,7 +128,7 @@ namespace Microsoft.Extensions.Localization.Tests
         public void ResourceManagerStringLocalizer_GetAllStrings_ReturnsExpectedValue(bool includeParentCultures)
         {
             // Arrange
-            var baseName = "test";
+            var baseName = "Microsoft.Extensions.Localization.Tests.Resources.Test";
             var resourceNamesCache = new ResourceNamesCache();
             var resourceAssembly = new TestAssemblyWrapper();
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
@@ -127,12 +141,10 @@ namespace Microsoft.Extensions.Localization.Tests
                 logger);
 
             // Act
-            // We have to access the result so it evaluates.
             var strings = localizer.GetAllStrings(includeParentCultures).ToList();
 
             // Assert
-            var value = Assert.Single(strings);
-            Assert.Equal("TestName", value.Value);
+            Assert.Equal(4, strings.Count);
         }
 
         [Theory]
@@ -141,12 +153,11 @@ namespace Microsoft.Extensions.Localization.Tests
         public void ResourceManagerStringLocalizer_GetAllStrings_MissingResourceThrows(bool includeParentCultures)
         {
             // Arrange
+            var baseName = "Microsoft.Extensions.Localization.Tests.Resources.Testington";
             var resourceNamesCache = new ResourceNamesCache();
-            var baseName = "testington";
             var resourceAssembly = new TestAssemblyWrapper("Assembly1");
             var resourceManager = new TestResourceManager(baseName, resourceAssembly.Assembly);
             var logger = Logger;
-
             var localizer = new ResourceManagerWithCultureStringLocalizer(
                 resourceManager,
                 resourceAssembly.Assembly,
@@ -158,12 +169,11 @@ namespace Microsoft.Extensions.Localization.Tests
             // Act & Assert
             var exception = Assert.Throws<MissingManifestResourceException>(() =>
             {
-                // We have to access the result so it evaluates.
-                localizer.GetAllStrings(includeParentCultures).ToArray();
+                localizer.GetAllStrings(includeParentCultures).ToList();
             });
             var expected = includeParentCultures
                 ? "No manifests exist for the current culture."
-                : $"The manifest 'testington.{CultureInfo.CurrentCulture}.resources' was not found.";
+                : $"Could not find any resources appropriate for the specified culture or the neutral culture.  Make sure \"{baseName}.resources\" was correctly embedded or linked into assembly \"{GetType().Assembly.GetName().Name}\" at compile time, or that all the satellite assemblies required are loadable and fully signed.";
             Assert.Equal(expected, exception.Message);
         }
 

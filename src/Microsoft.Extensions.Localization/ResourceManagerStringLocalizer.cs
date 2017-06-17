@@ -251,8 +251,25 @@ namespace Microsoft.Extensions.Localization
 
         private IList<string> GetAllResourceStrings(CultureInfo culture, bool throwOnMissing)
         {
-            var resourceSet = _resourceManager.GetResourceSet(culture, !throwOnMissing, throwOnMissing);
-            return resourceSet?.Cast<DictionaryEntry>().Select(r => (string)r.Key).ToList();
+            var cacheKey = GetResourceCacheKey(culture);
+            return _resourceNamesCache.GetOrAdd(cacheKey, _ =>
+            {
+                using (var resourceSet = _resourceManager.GetResourceSet(culture, true, throwOnMissing))
+                {
+                    return resourceSet?.Cast<DictionaryEntry>()
+                        .Select(r => r.Key.ToString()).ToList();
+                }
+            });
+        }
+
+        private string GetResourceCacheKey(CultureInfo culture)
+        {
+            var assemblyName = new AssemblyName(_resourceAssemblyWrapper.Assembly.FullName)
+            {
+                CultureName = culture.Name
+            };
+
+            return $"Assembly={assemblyName.FullName};resourceName={_resourceBaseName}";
         }
     }
 }
