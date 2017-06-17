@@ -254,11 +254,9 @@ namespace Microsoft.Extensions.Localization
             var cacheKey = GetResourceCacheKey(culture);
             return _resourceNamesCache.GetOrAdd(cacheKey, _ =>
             {
-                using (var resourceSet = _resourceManager.GetResourceSet(culture, true, throwOnMissing))
-                {
-                    return resourceSet?.Cast<DictionaryEntry>()
+                var resourceSet = _resourceManager.GetResourceSet(culture, true, throwOnMissing);
+                return resourceSet?.Cast<DictionaryEntry>()
                         .Select(r => r.Key.ToString()).ToList();
-                }
             });
         }
 
