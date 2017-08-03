@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Microsoft.Extensions.Localization.Test
+namespace Microsoft.Extensions.Localization.Tests
 {
     public class LocalizationServiceCollectionExtensionsTest
     {
