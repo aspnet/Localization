@@ -2,14 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Internal;
-using Microsoft.Extensions.Localization.Internal;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.AspNetCore.Localization
 {
@@ -21,12 +19,12 @@ namespace Microsoft.AspNetCore.Localization
         private static readonly char[] _cookieSeparator = new[] { '|' };
         private static readonly string _culturePrefix = "c=";
         private static readonly string _uiCulturePrefix = "uic=";
-        private static ILogger _logger;
 
         /// <summary>
         /// Represent the default cookie name used to track the user's preferred culture information, which is ".AspNetCore.Culture".
         /// </summary>
         public static readonly string DefaultCookieName = ".AspNetCore.Culture";
+        private ILogger _logger;
 
         /// <summary>
         /// The name of the cookie that contains the user's preferred culture information.
@@ -42,8 +40,6 @@ namespace Microsoft.AspNetCore.Localization
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            _logger = httpContext.RequestServices.GetService<ILogger>() ?? NullLogger.Instance;
-
             var cookie = httpContext.Request.Cookies[CookieName];
 
             if (string.IsNullOrEmpty(cookie))
@@ -52,6 +48,26 @@ namespace Microsoft.AspNetCore.Localization
             }
 
             var providerResultCulture = ParseCookieValue(cookie);
+            if (providerResultCulture != null)
+            {
+                Debug.Assert(providerResultCulture.Cultures.Count == 1);
+                Debug.Assert(providerResultCulture.UICultures.Count == 1);
+
+                var culture = providerResultCulture.Cultures[0].ToString();
+                var uiCulture = providerResultCulture.UICultures[0].ToString();
+
+                if (!IsValidCulture(culture))
+                {
+                    _logger = _logger ?? httpContext.RequestServices.GetService<ILogger<CookieRequestCultureProvider>>();
+                    _logger?.InvalidCultureName(nameof(CookieRequestCultureProvider), culture);
+                }
+
+                if (!IsValidCulture(uiCulture))
+                {
+                    _logger = _logger ?? httpContext.RequestServices.GetService<ILogger<CookieRequestCultureProvider>>();
+                    _logger?.InvalidCultureName(nameof(CookieRequestCultureProvider), uiCulture);
+                }
+            }
 
             return Task.FromResult(providerResultCulture);
         }
@@ -106,16 +122,6 @@ namespace Microsoft.AspNetCore.Localization
             var cultureName = potentialCultureName.Substring(_culturePrefix.Length);
             var uiCultureName = potentialUICultureName.Substring(_uiCulturePrefix.Length);
 
-            if (!IsValidCulture(cultureName))
-            {
-                _logger.ParsedCulture(nameof(CookieRequestCultureProvider), cultureName);
-            }
-
-            if (!IsValidCulture(uiCultureName))
-            {
-                _logger.ParsedCulture(nameof(CookieRequestCultureProvider), uiCultureName);
-            }
-
             if (cultureName == null && uiCultureName == null)
             {
                 // No values specified for either so no match
@@ -139,10 +145,10 @@ namespace Microsoft.AspNetCore.Localization
 
         private static bool IsValidCulture(string cultureName)
         {
+            Debug.Assert(cultureName != null);
             try
             {
-                CultureInfo.GetCultureInfo(cultureName);
-                return true;
+                return CultureInfo.GetCultureInfo(cultureName) != null;
             }
             catch (CultureNotFoundException)
             {

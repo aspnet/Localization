@@ -4,13 +4,13 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Extensions.Localization.Internal
+namespace Microsoft.AspNetCore.Localization
 {
-    internal static class RequestCultureProviderLoggerExtensions
+    internal static class LocalizationLoggerExtensions
     {
         private static readonly Action<ILogger, string, string, Exception> _parsedCulture;
 
-        static RequestCultureProviderLoggerExtensions()
+        static LocalizationLoggerExtensions()
         {
             _parsedCulture = LoggerMessage.Define<string, string>(
                 LogLevel.Warning,
@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.Localization.Internal
                 $"{{requestCultureProvider}} contains invalid culture '{{cultureName}}'.");
         }
 
-        public static void ParsedCulture(this ILogger logger, string requestCultureProvider, string cultureName)
+        public static void InvalidCultureName(this ILogger logger, string requestCultureProvider, string cultureName)
         {
             _parsedCulture(logger, requestCultureProvider, cultureName, null);
         }

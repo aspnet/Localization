@@ -36,19 +36,8 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         public RequestCulture DefaultRequestCulture
         {
-            get
-            {
-                return _defaultRequestCulture;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                _defaultRequestCulture = value;
-            }
+            get => _defaultRequestCulture;
+            set => _defaultRequestCulture = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>

@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
