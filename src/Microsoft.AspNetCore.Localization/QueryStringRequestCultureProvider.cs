@@ -2,9 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information. 
 
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Internal;
+using Microsoft.AspNetCore.Localization.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Localization
 {
@@ -13,6 +17,8 @@ namespace Microsoft.AspNetCore.Localization
     /// </summary>
     public class QueryStringRequestCultureProvider : RequestCultureProvider
     {
+        private ILogger _logger;
+
         /// <summary>
         /// The key that contains the culture name.
         /// Defaults to "culture".
@@ -71,9 +77,24 @@ namespace Microsoft.AspNetCore.Localization
                 queryCulture = queryUICulture;
             }
 
+            if (!IsValidCulture(queryCulture))
+            {
+                _logger = _logger ?? httpContext.RequestServices.GetService<ILogger<QueryStringRequestCultureProvider>>();
+                _logger?.InvalidCultureName(nameof(QueryStringRequestCultureProvider), queryCulture);
+            }
+
+            if (!IsValidCulture(queryUICulture))
+            {
+                _logger = _logger ?? httpContext.RequestServices.GetService<ILogger<QueryStringRequestCultureProvider>>();
+                _logger?.InvalidUICultureName(nameof(QueryStringRequestCultureProvider), queryUICulture);
+            }
+
             var providerResultCulture = new ProviderCultureResult(queryCulture, queryUICulture);
 
             return Task.FromResult(providerResultCulture);
         }
+
+        private static bool IsValidCulture(string cultureName) =>
+            CultureInfo.GetCultures(CultureTypes.SpecificCultures).Any(c => c.Name.Equals(cultureName));
     }
 }
