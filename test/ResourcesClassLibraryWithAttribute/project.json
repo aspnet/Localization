@@ -5,7 +5,7 @@
     "keyFile": "../../tools/Key.snk"
   },
   "dependencies": {
-    "Microsoft.Extensions.Localization": "1.1.2",
+    "Microsoft.Extensions.Localization": "1.1.3",
     "NETStandard.Library": "1.6.1"
   },
   "frameworks": {
