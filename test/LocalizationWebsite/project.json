@@ -4,17 +4,17 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "Microsoft.AspNetCore.Localization": "1.0.4",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.5",
+    "Microsoft.AspNetCore.Localization": "1.0.5",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.6",
     "Microsoft.Extensions.Configuration.CommandLine": "1.0.2",
-    "Microsoft.Extensions.Localization": "1.0.4",
+    "Microsoft.Extensions.Localization": "1.0.5",
     "Microsoft.Extensions.Logging.Console": "1.0.2"
   },
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.7",
+          "version": "1.0.8-servicing-005009-00",
           "type": "platform"
         },
         "dotnet-test-xunit": "1.0.0-rc3-000000-01",

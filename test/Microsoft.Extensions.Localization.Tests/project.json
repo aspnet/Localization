@@ -6,7 +6,7 @@
   "dependencies": {
     "dotnet-test-xunit": "1.0.0-rc3-000000-01",
     "Microsoft.Extensions.DependencyInjection": "1.0.2",
-    "Microsoft.Extensions.Localization": "1.0.4",
+    "Microsoft.Extensions.Localization": "1.0.5",
     "xunit": "2.1.0-*"
   },
   "frameworks": {
@@ -17,7 +17,7 @@
       ],
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.7",
+          "version": "1.0.8-servicing-005009-00",
           "type": "platform"
         },
         "moq.netcore": "4.4.0-beta8",
