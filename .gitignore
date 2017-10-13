@@ -35,6 +35,5 @@ nuget.exe
 .vscode/
 global.json
 
-korebuild-lock.txt
 *.g.targets
 
