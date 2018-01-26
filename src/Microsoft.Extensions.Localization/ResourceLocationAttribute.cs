@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(resourceLocation));
             }
 
-            if (resourceLocation.IndexOfAny(Path.GetInvalidPathChars()) > -1)
+            if (resourceLocation.IndexOfAny(Path.GetInvalidPathChars()) > -1 || resourceLocation.IndexOfAny(Path.GetInvalidFileNameChars()) > -1)
             {
                 throw new ArgumentException(Resources.Exception_InvalidResourceLocation, nameof(resourceLocation));
             }
