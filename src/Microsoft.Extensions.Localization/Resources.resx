@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Exception_InvalidResourceLocation" xml:space="preserve">
+    <value>Resource locations contains invalid character(s).</value>
+  </data>
+  <data name="Exception_InvalidRootNamespace" xml:space="preserve">
+    <value>Root namespace contains invalid character(s).</value>
+  </data>
   <data name="Localization_MissingManifest" xml:space="preserve">
     <value>The manifest '{0}' was not found.</value>
   </data>

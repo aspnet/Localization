@@ -11,6 +11,22 @@ namespace Microsoft.Extensions.Localization
             = new ResourceManager("Microsoft.Extensions.Localization.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
+        /// Resource locations contains invalid character(s).
+        /// </summary>
+        internal static string Exception_InvalidResourceLocation
+        {
+            get { return GetString("Exception_InvalidResourceLocation"); }
+        }
+
+        /// <summary>
+        /// Root namespace contains invalid character(s).
+        /// </summary>
+        internal static string Exception_InvalidRootNamespace
+        {
+            get { return GetString("Exception_InvalidRootNamespace"); }
+        }
+
+        /// <summary>
         /// The manifest '{0}' was not found.
         /// </summary>
         internal static string Localization_MissingManifest
