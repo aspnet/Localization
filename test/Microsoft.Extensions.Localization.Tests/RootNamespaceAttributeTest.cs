@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Localization.Tests
         {
             // Arrange
             var rootNamespace = "Invalid?RootNamespace";
-            var expectedMessage = $"{Resources.Exception_InvalidRootNamespace}\r\nParameter name: rootNamespace";
+            var expectedMessage = Resources.Exception_InvalidRootNamespace + Environment.NewLine + "Parameter name: rootNamespace";
 
             // Assert
             var exception = Assert.Throws<ArgumentException>(() => {

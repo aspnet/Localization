@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Localization.Tests
         {
             // Arrange
             var resourceLocation = "Invalid?Resource?Location";
-            var expectedMessage = $"{Resources.Exception_InvalidResourceLocation}\r\nParameter name: resourceLocation";
+            var expectedMessage = Resources.Exception_InvalidResourceLocation + Environment.NewLine + "Parameter name: resourceLocation";
 
             // Assert
             var exception = Assert.Throws<ArgumentException>(() => {
