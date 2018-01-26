@@ -4,7 +4,7 @@
 using System;
 using Xunit;
 
-namespace Microsoft.Extensions.Localization
+namespace Microsoft.Extensions.Localization.Tests
 {
     public class RootNamespaceAttributeTest
     {
