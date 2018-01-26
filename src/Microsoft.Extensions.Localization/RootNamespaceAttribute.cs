@@ -39,11 +39,6 @@ namespace Microsoft.Extensions.Localization
 
         private static bool IsValidNamespace(string @namespace)
         {
-            if (string.IsNullOrEmpty(@namespace))
-            {
-                return false;
-            }
-
             if (!(char.IsLetter(@namespace[0]) || @namespace[0] == '_'))
             {
                 return false;
