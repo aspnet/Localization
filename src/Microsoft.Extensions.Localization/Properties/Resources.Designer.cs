@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Localization
             = new ResourceManager("Microsoft.Extensions.Localization.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
-        /// Resource locations contains invalid character(s).
+        /// Resource location contains invalid character(s).
         /// </summary>
         internal static string Exception_InvalidResourceLocation
         {
