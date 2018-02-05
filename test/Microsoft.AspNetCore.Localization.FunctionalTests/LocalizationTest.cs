@@ -77,6 +77,15 @@ namespace Microsoft.AspNetCore.Localization.FunctionalTests
                 "Bonjour from StartupResourcesAtRootFolder Bonjour from Test in root folder Bonjour from Customer in Models folder");
         }
 
+        [Fact]
+        public Task Localization_FallbackToParentLocale()
+        {
+            return RunTest(
+                typeof(StartupChineseLocaleFallback),
+                "zh-CN",
+                "zh-Hans");
+        }
+
         private async Task RunTest(Type startupType, string culture, string expected)
         {
             var webHostBuilder = new WebHostBuilder().UseStartup(startupType);
