@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.IO;
+using System.Linq;
 
 namespace Microsoft.Extensions.Localization
 {
@@ -11,6 +13,9 @@ namespace Microsoft.Extensions.Localization
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ResourceLocationAttribute : Attribute
     {
+        private static readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars()
+            .Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar).ToArray();
+
         /// <summary>
         /// Creates a new <see cref="ResourceLocationAttribute"/>.
         /// </summary>
@@ -20,6 +25,11 @@ namespace Microsoft.Extensions.Localization
             if (string.IsNullOrEmpty(resourceLocation))
             {
                 throw new ArgumentNullException(nameof(resourceLocation));
+            }
+
+            if (resourceLocation.IndexOfAny(_invalidFileNameChars) > -1)
+            {
+                throw new ArgumentException(Resources.Exception_InvalidResourceLocation, nameof(resourceLocation));
             }
 
             ResourceLocation = resourceLocation;

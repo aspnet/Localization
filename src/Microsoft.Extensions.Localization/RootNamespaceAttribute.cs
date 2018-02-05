@@ -23,6 +23,11 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentNullException(nameof(rootNamespace));
             }
 
+            if (!IsValidNamespace(rootNamespace))
+            {
+                throw new ArgumentException(Resources.Exception_InvalidRootNamespace, nameof(rootNamespace));
+            }
+
             RootNamespace = rootNamespace;
         }
 
@@ -31,5 +36,23 @@ namespace Microsoft.Extensions.Localization
         /// determine the resource name to look for when RootNamespace differs from the AssemblyName.
         /// </summary>
         public string RootNamespace { get; }
+
+        private static bool IsValidNamespace(string @namespace)
+        {
+            if (!(char.IsLetter(@namespace[0]) || @namespace[0] == '_'))
+            {
+                return false;
+            }
+
+            for (int i = 1; i < @namespace.Length; i++)
+            {
+                if (!(char.IsLetterOrDigit(@namespace[i]) || @namespace[i] == '.'))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
