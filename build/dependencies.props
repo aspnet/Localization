@@ -5,8 +5,8 @@
   <PropertyGroup Label="Package Versions">
     <InternalAspNetCoreSdkPackageVersion>2.2.0-preview1-17102</InternalAspNetCoreSdkPackageVersion>
     <MicrosoftAspNetCoreHttpExtensionsPackageVersion>2.2.0-preview1-34823</MicrosoftAspNetCoreHttpExtensionsPackageVersion>
-    <MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>2.2.0-a-preview1-link-generation-template-16844</MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>
-    <MicrosoftAspNetCoreRoutingPackageVersion>2.2.0-a-preview1-link-generation-template-16844</MicrosoftAspNetCoreRoutingPackageVersion>
+    <MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>2.2.0-a-preview1-change-linkgenerator-api-16845</MicrosoftAspNetCoreRoutingAbstractionsPackageVersion>
+    <MicrosoftAspNetCoreRoutingPackageVersion>2.2.0-a-preview1-change-linkgenerator-api-16845</MicrosoftAspNetCoreRoutingPackageVersion>
     <MicrosoftAspNetCoreServerIISIntegrationPackageVersion>2.2.0-preview1-34823</MicrosoftAspNetCoreServerIISIntegrationPackageVersion>
     <MicrosoftAspNetCoreServerKestrelPackageVersion>2.2.0-preview1-34823</MicrosoftAspNetCoreServerKestrelPackageVersion>
     <MicrosoftAspNetCoreTestHostPackageVersion>2.2.0-preview1-34823</MicrosoftAspNetCoreTestHostPackageVersion>
