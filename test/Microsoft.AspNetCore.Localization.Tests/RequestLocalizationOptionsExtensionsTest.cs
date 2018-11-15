@@ -14,14 +14,13 @@ namespace Microsoft.AspNetCore.Localization
         {
             // Arrange
             var options = new RequestLocalizationOptions();
+            var provider = new CustomRequestCultureProvider(context => Task.FromResult(new ProviderCultureResult("ar-YE")));
 
             // Act
-            options.AddRequestCultureProvider(new CustomRequestCultureProvider(context => {
-                return Task.FromResult(new ProviderCultureResult("ar-YE"));
-            }));
+            options.AddInitialRequestCultureProvider(provider);
 
             // Assert
-            Assert.IsType<CustomRequestCultureProvider>(options.RequestCultureProviders[0]);
+            Assert.Same(provider, options.RequestCultureProviders[0]);
         }
     }
 }

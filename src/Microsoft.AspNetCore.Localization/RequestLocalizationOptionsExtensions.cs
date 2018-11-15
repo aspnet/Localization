@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.AspNetCore.Localization;
 
 namespace Microsoft.AspNetCore.Builder
@@ -16,11 +17,21 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="requestLocalizationOptions">The cultures to be added.</param>
         /// <param name="requestCultureProvider">The cultures to be added.</param>
         /// <returns>The <see cref="RequestLocalizationOptions"/>.</returns>
-        /// <remarks>Adding <paramref name="requestCultureProvider"/> ensures that it has priority over any of the default <see cref="RequestCultureProvider"/>s.</remarks>
-        public static RequestLocalizationOptions AddRequestCultureProvider(
+        /// <remarks>This method ensures that <paramref name="requestCultureProvider"/> over other <see cref="RequestCultureProvider"/> instances in <see cref="RequestLocalizationOptions.RequestCultureProviders"/>.</remarks>
+        public static RequestLocalizationOptions AddInitialRequestCultureProvider(
             this RequestLocalizationOptions requestLocalizationOptions,
             RequestCultureProvider requestCultureProvider)
         {
+            if (requestLocalizationOptions == null)
+            {
+                throw new ArgumentNullException(nameof(requestLocalizationOptions));
+            }
+
+            if (requestCultureProvider == null)
+            {
+                throw new ArgumentNullException(nameof(requestCultureProvider));
+            }
+
             requestLocalizationOptions.RequestCultureProviders.Insert(0, requestCultureProvider);
 
             return requestLocalizationOptions;
