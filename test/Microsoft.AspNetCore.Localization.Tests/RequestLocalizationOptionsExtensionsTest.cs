@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Localization
     public class RequestLocalizationOptionsExtensionsTest
     {
         [Fact]
-        public void AddRequestCultureProvider_ShouldBeInsertedAtFirstPostion()
+        public void AddInitialRequestCultureProvider_ShouldBeInsertedAtFirstPostion()
         {
             // Arrange
             var options = new RequestLocalizationOptions();

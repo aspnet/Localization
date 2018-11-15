@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="requestLocalizationOptions">The cultures to be added.</param>
         /// <param name="requestCultureProvider">The cultures to be added.</param>
         /// <returns>The <see cref="RequestLocalizationOptions"/>.</returns>
-        /// <remarks>This method ensures that <paramref name="requestCultureProvider"/> over other <see cref="RequestCultureProvider"/> instances in <see cref="RequestLocalizationOptions.RequestCultureProviders"/>.</remarks>
+        /// <remarks>This method ensures that <paramref name="requestCultureProvider"/> has priority over other <see cref="RequestCultureProvider"/> instances in <see cref="RequestLocalizationOptions.RequestCultureProviders"/>.</remarks>
         public static RequestLocalizationOptions AddInitialRequestCultureProvider(
             this RequestLocalizationOptions requestLocalizationOptions,
             RequestCultureProvider requestCultureProvider)
